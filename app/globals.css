@@ -1,0 +1,143 @@
+@import "tailwindcss";
+
+/* ─────────────────────────────────────────────
+   PORTFOLIKO — design tokens · "Solder & Signal"
+   copper = hardware / past  ·  signal = software / present
+   ───────────────────────────────────────────── */
+
+@theme {
+  --color-void: #08090b;
+  --color-board: #0e1013;
+  --color-trace: #1c2026;
+  --color-silk: #edeff2;
+  --color-legend: #8a9199;
+  --color-copper: #c2793e;
+  --color-signal: #6e8bff;
+
+  --font-display: "Clash Display", "Arial Black", system-ui, sans-serif;
+  --font-body: "Satoshi", system-ui, -apple-system, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, "SF Mono", Menlo, monospace;
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out-quint: cubic-bezier(0.83, 0, 0.17, 1);
+}
+
+/* accent is animatable — it migrates copper → signal during boot */
+@property --accent {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #c2793e;
+}
+
+:root {
+  --accent: #c2793e;
+  --gut: clamp(20px, 5vw, 72px);
+}
+
+html {
+  background: #08090b;
+  color-scheme: dark;
+}
+
+body {
+  background: #08090b;
+  color: #edeff2;
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: clip;
+}
+
+::selection {
+  background: var(--accent);
+  color: #08090b;
+}
+
+:focus-visible {
+  outline: 1px solid var(--accent);
+  outline-offset: 4px;
+  border-radius: 1px;
+}
+
+/* Lenis */
+html.lenis,
+html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+.lenis.lenis-stopped { overflow: hidden; }
+
+/* ── silkscreen legend text ────────────────── */
+.legend {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #8a9199;
+}
+
+/* ── custom probe cursor ───────────────────── */
+@media (hover: hover) and (pointer: fine) {
+  html.has-cursor,
+  html.has-cursor * { cursor: none !important; }
+}
+
+.cursor-root {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9999;
+  pointer-events: none;
+  mix-blend-mode: difference;
+  will-change: transform;
+}
+
+.cursor-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 28px;
+  height: 28px;
+  margin: -14px 0 0 -14px;
+  border: 1px solid #edeff2;
+  border-radius: 50%;
+  transition:
+    width 0.35s var(--ease-out-expo),
+    height 0.35s var(--ease-out-expo),
+    margin 0.35s var(--ease-out-expo),
+    border-radius 0.35s var(--ease-out-expo),
+    opacity 0.3s ease;
+}
+
+.cursor-dot {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 3px;
+  height: 3px;
+  margin: -1.5px 0 0 -1.5px;
+  background: #edeff2;
+  border-radius: 50%;
+  transition: opacity 0.3s ease;
+}
+
+.cursor-root[data-state="link"] .cursor-ring {
+  width: 56px; height: 56px; margin: -28px 0 0 -28px;
+}
+.cursor-root[data-state="link"] .cursor-dot { opacity: 0; }
+
+.cursor-root[data-state="text"] .cursor-ring {
+  width: 2px; height: 26px; margin: -13px 0 0 -1px; border-radius: 0;
+}
+.cursor-root[data-state="text"] .cursor-dot { opacity: 0; }
+
+.cursor-root[data-hidden="true"] { opacity: 0; }
+
+/* ── reduced motion ────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  .cursor-root { display: none; }
+}
