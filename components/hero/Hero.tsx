@@ -35,6 +35,14 @@ const railRow = [
   "py-[7px] last:border-b-0",
 ].join(" ");
 
+// headline is split by hand — line breaks are a design decision,
+// not something to leave to the browser
+const LINES = [
+  "I build software",
+  "that turns ideas into",
+  "something real.",
+];
+
 const STATUS: [string, string][] = [
   ["Role", "Software Dev"],
   ["Org", "Dataclap"],
@@ -56,26 +64,44 @@ export default function Hero() {
 
       {/* silkscreen stays in the DOM — crisp text, no font loading in WebGL */}
       <div className="pointer-events-none absolute inset-0 z-2">
-        <span className="legend absolute bottom-10 left-(--gut) opacity-40">
+        <span
+          className="legend boot-fade absolute bottom-10 left-(--gut) opacity-40"
+          style={{ "--d": "2600ms" } as React.CSSProperties}
+        >
           U1 · LGK//2026
         </span>
-        <span className="legend absolute bottom-10 right-(--gut) opacity-40">
+        <span
+          className="legend boot-fade absolute bottom-10 right-(--gut) opacity-40"
+          style={{ "--d": "2750ms" } as React.CSSProperties}
+        >
           REV 0.2 · TN, IN
         </span>
       </div>
 
       <div className="relative z-3 grid w-full max-w-[1440px] items-start gap-12 lg:grid-cols-[minmax(0,1fr)_auto]">
         <div>
-          <div className="legend mb-7 flex items-center gap-3">
-            <span className="size-[5px] rounded-full bg-(--accent)" />
+          <div
+            className="legend boot-fade mb-7 flex items-center gap-3"
+            style={{ "--d": "2050ms" } as React.CSSProperties}
+          >
+            <span className="boot-dot size-[5px] rounded-full bg-(--accent)" />
             <span>Software Developer · AI Builder</span>
           </div>
 
           <h1 className={headline}>
-            I build software that turns ideas into something real.
+            {LINES.map((line, i) => (
+              <span key={line} className="boot-line">
+                <span style={{ "--d": `${1450 + i * 110}ms` } as React.CSSProperties}>
+                  {line}
+                </span>
+              </span>
+            ))}
           </h1>
 
-          <p className={lede}>
+          <p
+            className={`${lede} boot-fade`}
+            style={{ "--d": "2150ms" } as React.CSSProperties}
+          >
             {"I'm "}
             <strong className="font-medium text-silk">Logesh</strong>
             {", a software developer and builder focused on web applications,"}
@@ -86,7 +112,10 @@ export default function Hero() {
             {" alongside my work."}
           </p>
 
-          <div className="mt-9 flex flex-wrap gap-3">
+          <div
+            className="boot-fade mt-9 flex flex-wrap gap-3"
+            style={{ "--d": "2300ms" } as React.CSSProperties}
+          >
             <a href="#work" className={btnPrimary}>
               Explore my work
             </a>
@@ -96,7 +125,10 @@ export default function Hero() {
           </div>
         </div>
 
-        <aside className="min-w-[236px] border border-trace bg-board/70 px-5 py-4 backdrop-blur-[2px]">
+        <aside
+          className="boot-fade min-w-[236px] border border-trace bg-board/70 px-5 py-4 backdrop-blur-[2px]"
+          style={{ "--d": "2400ms" } as React.CSSProperties}
+        >
           {STATUS.map(([k, v]) => (
             <div key={k} className={railRow}>
               <span className="legend">{k}</span>

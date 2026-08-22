@@ -131,6 +131,53 @@ html.lenis body { height: auto; }
 
 .cursor-root[data-hidden="true"] { opacity: 0; }
 
+/* ── boot sequence ─────────────────────────── */
+
+/* the migration. one transition on <body> recolours every accent on the
+   page at once, because --accent is a registered custom property */
+body.booted {
+  --accent: #6e8bff;
+  transition: --accent 1400ms cubic-bezier(0.83, 0, 0.17, 1);
+}
+
+.boot-line {
+  display: block;
+  overflow: hidden;
+}
+.boot-line > span {
+  display: block;
+  transform: translateY(115%);
+  animation: bootRise 900ms var(--ease-out-expo) forwards;
+  animation-delay: var(--d, 0ms);
+}
+@keyframes bootRise {
+  to { transform: translateY(0); }
+}
+
+.boot-fade {
+  opacity: 0;
+  animation: bootFade 800ms var(--ease-out-expo) forwards;
+  animation-delay: var(--d, 0ms);
+}
+@keyframes bootFade {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* status dot starts pinging only after the sequence lands */
+body.booted .boot-dot {
+  animation: bootPing 2.8s ease-out infinite 1.2s;
+}
+@keyframes bootPing {
+  0%        { box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 55%, transparent); }
+  70%, 100% { box-shadow: 0 0 0 10px transparent; }
+}
+
+/* reduced motion: nothing animates, everything is already home */
+body.boot-skip .boot-line > span { transform: none; animation: none; }
+body.boot-skip .boot-fade { opacity: 1; animation: none; }
+body.boot-skip { transition: none; }
+
 /* ── reduced motion ────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {

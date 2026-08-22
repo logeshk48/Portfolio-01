@@ -1,16 +1,5 @@
 import * as THREE from "three";
 
-/**
- * Copper trace shader.
- *
- * Base layer: oxidised copper with a faint fresnel so the tube reads as
- * a rounded metal ridge rather than a flat line.
- * Signal layer: a windowed pulse travelling along the tube's length (uv.x).
- * uMix lerps the pulse colour copper → signal, driven from the DOM by the
- * same clock as the --accent custom property. That's how the WebGL and the
- * CSS stay in sync during the boot migration.
- */
-
 const vertex = /* glsl */ `
   varying vec2 vUv;
   varying vec3 vNormal;
@@ -29,9 +18,11 @@ const fragment = /* glsl */ `
   precision highp float;
 
   uniform float uTime;
-  uniform float uMix;      // 0 = copper, 1 = signal
-  uniform float uPulse;    // 0 = dead trace, >0 = carries current (phase offset)
+  uniform float uMix;
+  uniform float uPulse;
   uniform float uIntensity;
+  uniform float uReveal;
+  uniform float uDelay;
   uniform vec3  uCopper;
   uniform vec3  uSignal;
 
@@ -40,21 +31,26 @@ const fragment = /* glsl */ `
   varying vec3 vView;
 
   void main() {
-    // dull etched copper base
+    // this route's own slice of the global reveal
+    float grow = clamp((uReveal - uDelay) / max(0.0001, 1.0 - uDelay), 0.0, 1.0);
+    if (vUv.x > grow) discard;
+
     float fres = pow(1.0 - abs(dot(normalize(vNormal), normalize(vView))), 2.4);
-    vec3 base = uCopper * (0.030 + fres * 0.13);
+    vec3 col = uCopper * (0.030 + fres * 0.13);
 
-    vec3 col = base;
+    // hot tip at the growing end, only while it is still growing
+    float etching = step(0.001, grow) * (1.0 - step(0.999, grow));
+    float tip = smoothstep(0.045, 0.0, grow - vUv.x) * etching;
+    col += mix(uCopper, uSignal, uMix) * tip * 2.6;
+    col += vec3(1.0) * pow(tip, 3.0) * 0.9;
 
-    if (uPulse > 0.5) {
-      float speed = 0.20;
-      float head = fract(uTime * speed + uPulse * 0.137);
+    // current only flows once the route is fully etched
+    if (uPulse > 0.5 && grow > 0.999) {
+      float head = fract(uTime * 0.20 + uPulse * 0.137);
 
-      // distance along the trace, wrapped, so the pulse loops seamlessly
       float d = vUv.x - head;
       d = d - floor(d + 0.5);
 
-      // sharp leading edge, long decaying tail — like charge dissipating
       float lead = smoothstep(0.010, 0.0, d) * step(-0.010, d);
       float tail = exp(-max(0.0, -d) * 34.0);
       float glow = clamp(lead + tail * 0.85, 0.0, 1.0);
@@ -68,15 +64,18 @@ const fragment = /* glsl */ `
   }
 `;
 
-export function createTraceMaterial(pulse: number) {
+export function createTraceMaterial(pulse: number, delay: number) {
   return new THREE.ShaderMaterial({
     vertexShader: vertex,
     fragmentShader: fragment,
+    side: THREE.DoubleSide,
     uniforms: {
       uTime: { value: 0 },
       uMix: { value: 0 },
       uPulse: { value: pulse },
       uIntensity: { value: 1 },
+      uReveal: { value: 0 },
+      uDelay: { value: delay },
       uCopper: { value: new THREE.Color("#c2793e") },
       uSignal: { value: new THREE.Color("#6e8bff") },
     },

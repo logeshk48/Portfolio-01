@@ -3,6 +3,7 @@ import { GeistMono } from "geist/font/mono";
 import SmoothScroll from "@/components/providers/SmoothScroll";
 import Cursor from "@/components/ui/Cursor";
 import "./globals.css";
+import BootSequence from "@/components/providers/BootSequence";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://logesh.dev"),
@@ -46,6 +47,7 @@ export default function RootLayout({
         >
           Skip to content
         </a>
+        <BootSequence />
         <Cursor />
         <SmoothScroll>{children}</SmoothScroll>
       </body>

@@ -5,18 +5,20 @@ import * as THREE from "three";
 import { useFrame, useThree } from "@react-three/fiber";
 import { CHIP, ROUTES, VIAS, routeCurve } from "@/lib/board";
 import { createTraceMaterial } from "./traceMaterial";
+import { boot } from "@/lib/boot";
 
 const COPPER = new THREE.Color("#c2793e");
 const SIGNAL = new THREE.Color("#6e8bff");
 
-function Traces({ mix }: { mix: React.RefObject<number> }) {
+function Traces() {
   const group = useRef<THREE.Group>(null);
 
   const built = useMemo(
     () =>
-      ROUTES.map((r) => ({
+      ROUTES.map((r, i) => ({
         geo: new THREE.TubeGeometry(routeCurve(r.pts, r.layer), 200, 0.019, 6, false),
-        mat: createTraceMaterial(r.pulse),
+        // outer routes etch first, feeds into the package last
+        mat: createTraceMaterial(r.pulse, (i / ROUTES.length) * 0.5),
       })),
     []
   );
@@ -31,7 +33,8 @@ function Traces({ mix }: { mix: React.RefObject<number> }) {
       const mat = (child as THREE.Mesh).material as THREE.ShaderMaterial;
       if (!mat?.uniforms) continue;
       mat.uniforms.uTime.value = t;
-      mat.uniforms.uMix.value = mix.current;
+      mat.uniforms.uMix.value = boot.mix;
+      mat.uniforms.uReveal.value = boot.reveal;
     }
   });
 
@@ -62,7 +65,12 @@ function Vias() {
 
   useFrame(() => {
     const mesh = ref.current;
-    if (!mesh || mesh.userData.placed) return;
+    if (!mesh) return;
+
+    // vias pop in behind the etching front
+    mesh.visible = boot.reveal > 0.55;
+    if (mesh.userData.placed) return;
+
     VIAS.forEach((v, i) => {
       dummy.position.set(v[0], v[1], 0.05);
       dummy.rotation.set(Math.PI / 2, 0, 0);
@@ -88,7 +96,8 @@ function Vias() {
 }
 
 /** The package. Body, pin-1 dimple, and two rows of gull-wing pins. */
-function Chip({ mix }: { mix: React.RefObject<number> }) {
+function Chip() {
+  const root = useRef<THREE.Group>(null);
   const body = useRef<THREE.Mesh>(null);
   const pins = useRef<THREE.InstancedMesh>(null);
   const dummy = useMemo(() => new THREE.Object3D(), []);
@@ -108,15 +117,24 @@ function Chip({ mix }: { mix: React.RefObject<number> }) {
       mesh.userData.placed = true;
     }
 
+    const g = root.current;
+    if (g) {
+      // seats itself as the last routes land
+      const seat = Math.min(1, Math.max(0, (boot.reveal - 0.6) / 0.4));
+      g.visible = seat > 0;
+      g.scale.setScalar(0.94 + seat * 0.06);
+      g.position.z = 0.12 + (1 - seat) * 1.6;
+    }
+
     if (body.current) {
       const m = body.current.material as THREE.MeshStandardMaterial;
-      m.emissive.copy(COPPER).lerp(SIGNAL, mix.current);
+      m.emissive.copy(COPPER).lerp(SIGNAL, boot.mix);
       m.emissiveIntensity = 0.05 + Math.sin(state.clock.elapsedTime * 1.4) * 0.014;
     }
   });
 
   return (
-    <group position={[CHIP[0], CHIP[1], 0.12]}>
+    <group ref={root} position={[CHIP[0], CHIP[1], 0.12]}>
       <mesh ref={body} castShadow>
         <boxGeometry args={[3.0, 1.35, 0.22]} />
         <meshStandardMaterial color="#0d1014" metalness={0.5} roughness={0.55} />
@@ -146,7 +164,7 @@ function Substrate() {
   );
 }
 
-export default function Board({ mix }: { mix: React.RefObject<number> }) {
+export default function Board() {
   const group = useRef<THREE.Group>(null);
   const { size } = useThree();
   const target = useRef({ x: 0, y: 0 });
@@ -172,9 +190,9 @@ export default function Board({ mix }: { mix: React.RefObject<number> }) {
   return (
     <group ref={group} scale={scale} rotation={[-0.30, 0, 0]}>
       <Substrate />
-      <Traces mix={mix} />
+      <Traces />
       <Vias />
-      <Chip mix={mix} />
+      <Chip />
 
       <ambientLight intensity={0.16} />
       <pointLight position={[-10, 7, 9]} intensity={30} color="#c2793e" distance={30} decay={2} />

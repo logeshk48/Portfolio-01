@@ -1,6 +1,5 @@
 "use client";
 
-import { useRef } from "react";
 import dynamic from "next/dynamic";
 import { Canvas } from "@react-three/fiber";
 import { EffectComposer, Bloom, Vignette } from "@react-three/postprocessing";
@@ -9,9 +8,6 @@ import BoardFallback from "./BoardFallback";
 import { useCapability } from "@/lib/useCapability";
 
 function Scene() {
-  // shared 0→1 copper→signal value; Phase 03 animates it
-  const mix = useRef(0);
-
   return (
     <Canvas
       dpr={[1, 1.75]}
@@ -19,7 +15,7 @@ function Scene() {
       camera={{ position: [0, 0, 24], fov: 38, near: 0.1, far: 90 }}
       style={{ position: "absolute", inset: 0 }}
     >
-      <Board mix={mix} />
+      <Board />
       <EffectComposer>
         <Bloom
           intensity={0.95}
