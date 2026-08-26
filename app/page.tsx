@@ -5,7 +5,7 @@ export default function Home() {
     <main id="main">
       <Hero />
       <section id="work" className="min-h-svh px-(--gut) py-32">
-        <p className="legend">Selected work · Phase 06</p>
+        <p className="label">Selected work · next phase</p>
       </section>
     </main>
   );

@@ -1,60 +1,55 @@
 @import "tailwindcss";
 
 /* ─────────────────────────────────────────────
-   PORTFOLIKO — design tokens · "Solder & Signal"
-   copper = hardware / past  ·  signal = software / present
+   PORTFOLIO — LOGESH
+   A room lit by a screen. Violet and ice rim the dark,
+   one candle keeps it warm. Colour lives in the light,
+   never in the interface.
    ───────────────────────────────────────────── */
 
 @theme {
-  --color-void: #08090b;
-  --color-board: #0e1013;
-  --color-trace: #1c2026;
-  --color-silk: #edeff2;
-  --color-legend: #8a9199;
-  --color-copper: #c2793e;
-  --color-signal: #6e8bff;
+  --color-bg: #0a0a18;
+  --color-surface: #120f2c;
+  --color-line: #221e46;
+  --color-line-hi: #4b4780;
+  --color-text: #f2f1fa;
+  --color-muted: #8b88b0;
+  --color-violet: #7c5cff;
+  --color-ice: #63e8ff;
+  --color-screen: #9cc8ff;
 
-  --font-display: "Clash Display", "Arial Black", system-ui, sans-serif;
-  --font-body: "Satoshi", system-ui, -apple-system, sans-serif;
+  --font-sans: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, "SF Mono", Menlo, monospace;
 
-  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
-  --ease-in-out-quint: cubic-bezier(0.83, 0, 0.17, 1);
-}
-
-/* accent is animatable — it migrates copper → signal during boot */
-@property --accent {
-  syntax: "<color>";
-  inherits: true;
-  initial-value: #c2793e;
+  --ease-slow: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-quint: cubic-bezier(0.83, 0, 0.17, 1);
 }
 
 :root {
-  --accent: #c2793e;
-  --gut: clamp(20px, 5vw, 72px);
+  --gut: clamp(24px, 6vw, 96px);
 }
 
 html {
-  background: #08090b;
+  background: #0a0a18;
   color-scheme: dark;
 }
 
 body {
-  background: #08090b;
-  color: #edeff2;
-  font-family: var(--font-body);
+  background: #0a0a18;
+  color: #f2f1fa;
+  font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
   overflow-x: clip;
 }
 
 ::selection {
-  background: var(--accent);
-  color: #08090b;
+  background: #63e8ff;
+  color: #0a0a18;
 }
 
 :focus-visible {
-  outline: 1px solid var(--accent);
+  outline: 1px solid #63e8ff;
   outline-offset: 4px;
   border-radius: 1px;
 }
@@ -65,16 +60,61 @@ html.lenis body { height: auto; }
 .lenis.lenis-smooth { scroll-behavior: auto !important; }
 .lenis.lenis-stopped { overflow: hidden; }
 
-/* ── silkscreen legend text ────────────────── */
-.legend {
+/* ── uppercase system ──────────────────────────
+   Caps only ever appear tracked out. Uppercase at normal
+   tracking reads cramped and cheap; at 0.14em it reads
+   engineered. Three sizes, nothing else. */
+.label {
   font-family: var(--font-mono);
   font-size: 10px;
+  font-weight: 400;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: #8a9199;
+  color: #8b88b0;
+}
+.label-lg {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.caps {
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-weight: 500;
 }
 
-/* ── custom probe cursor ───────────────────── */
+/* a word can glow — used once, on one word, never more */
+.glow-ice {
+  color: #d6f7ff;
+  text-shadow:
+    0 0 18px rgba(99, 232, 255, 0.55),
+    0 0 54px rgba(99, 232, 255, 0.28);
+}
+
+/* ── grain: stops flat black banding on cheap panels ── */
+.grain {
+  position: fixed;
+  inset: -50%;
+  z-index: 3;
+  pointer-events: none;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='4'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ── entrance: one slow orchestrated reveal ─────── */
+.rise {
+  opacity: 0;
+  transform: translateY(18px);
+  animation: rise 1.4s var(--ease-slow) forwards;
+  animation-delay: var(--d, 0ms);
+}
+@keyframes rise {
+  to { opacity: 1; transform: none; }
+}
+
+/* ── probe cursor ─────────────────────────────── */
 @media (hover: hover) and (pointer: fine) {
   html.has-cursor,
   html.has-cursor * { cursor: none !important; }
@@ -89,24 +129,22 @@ html.lenis body { height: auto; }
   mix-blend-mode: difference;
   will-change: transform;
 }
-
 .cursor-ring {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 28px;
-  height: 28px;
-  margin: -14px 0 0 -14px;
-  border: 1px solid #edeff2;
+  width: 30px;
+  height: 30px;
+  margin: -15px 0 0 -15px;
+  border: 1px solid #f2f1fa;
   border-radius: 50%;
   transition:
-    width 0.35s var(--ease-out-expo),
-    height 0.35s var(--ease-out-expo),
-    margin 0.35s var(--ease-out-expo),
-    border-radius 0.35s var(--ease-out-expo),
-    opacity 0.3s ease;
+    width 0.5s var(--ease-slow),
+    height 0.5s var(--ease-slow),
+    margin 0.5s var(--ease-slow),
+    border-radius 0.5s var(--ease-slow),
+    opacity 0.4s ease;
 }
-
 .cursor-dot {
   position: absolute;
   top: 50%;
@@ -114,71 +152,21 @@ html.lenis body { height: auto; }
   width: 3px;
   height: 3px;
   margin: -1.5px 0 0 -1.5px;
-  background: #edeff2;
+  background: #f2f1fa;
   border-radius: 50%;
-  transition: opacity 0.3s ease;
+  transition: opacity 0.4s ease;
 }
-
 .cursor-root[data-state="link"] .cursor-ring {
-  width: 56px; height: 56px; margin: -28px 0 0 -28px;
+  width: 60px; height: 60px; margin: -30px 0 0 -30px;
 }
 .cursor-root[data-state="link"] .cursor-dot { opacity: 0; }
-
 .cursor-root[data-state="text"] .cursor-ring {
-  width: 2px; height: 26px; margin: -13px 0 0 -1px; border-radius: 0;
+  width: 2px; height: 28px; margin: -14px 0 0 -1px; border-radius: 0;
 }
 .cursor-root[data-state="text"] .cursor-dot { opacity: 0; }
-
 .cursor-root[data-hidden="true"] { opacity: 0; }
 
-/* ── boot sequence ─────────────────────────── */
-
-/* the migration. one transition on <body> recolours every accent on the
-   page at once, because --accent is a registered custom property */
-body.booted {
-  --accent: #6e8bff;
-  transition: --accent 1400ms cubic-bezier(0.83, 0, 0.17, 1);
-}
-
-.boot-line {
-  display: block;
-  overflow: hidden;
-}
-.boot-line > span {
-  display: block;
-  transform: translateY(115%);
-  animation: bootRise 900ms var(--ease-out-expo) forwards;
-  animation-delay: var(--d, 0ms);
-}
-@keyframes bootRise {
-  to { transform: translateY(0); }
-}
-
-.boot-fade {
-  opacity: 0;
-  animation: bootFade 800ms var(--ease-out-expo) forwards;
-  animation-delay: var(--d, 0ms);
-}
-@keyframes bootFade {
-  from { opacity: 0; transform: translateY(14px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-/* status dot starts pinging only after the sequence lands */
-body.booted .boot-dot {
-  animation: bootPing 2.8s ease-out infinite 1.2s;
-}
-@keyframes bootPing {
-  0%        { box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 55%, transparent); }
-  70%, 100% { box-shadow: 0 0 0 10px transparent; }
-}
-
-/* reduced motion: nothing animates, everything is already home */
-body.boot-skip .boot-line > span { transform: none; animation: none; }
-body.boot-skip .boot-fade { opacity: 1; animation: none; }
-body.boot-skip { transition: none; }
-
-/* ── reduced motion ────────────────────────── */
+/* ── reduced motion ───────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.001ms !important;
@@ -186,5 +174,6 @@ body.boot-skip { transition: none; }
     transition-duration: 0.001ms !important;
     scroll-behavior: auto !important;
   }
+  .rise { opacity: 1; transform: none; }
   .cursor-root { display: none; }
 }

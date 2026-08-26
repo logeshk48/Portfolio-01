@@ -1,142 +1,181 @@
-import BoardCanvas from "@/components/three/BoardCanvas";
+import Link from "next/link";
+import Nav from "@/components/ui/Nav";
+import ScrollMeter from "./ScrollMeter";
+import ScrollScene from "./ScrollScene";
 
+// he sits right of centre with bright code monitors behind him, so the
+// left has to be held down hard. Mobile centres the subject, so that
+// gets a vertical wash instead.
 const scrim =
-  "radial-gradient(120% 90% at 18% 50%," +
-  " rgba(8,9,11,0.94) 0%," +
-  " rgba(8,9,11,0.86) 32%," +
-  " rgba(8,9,11,0.35) 62%," +
-  " transparent 82%)";
+  "linear-gradient(to right," +
+  " rgba(10,10,24,0.96) 0%," +
+  " rgba(10,10,24,0.90) 26%," +
+  " rgba(10,10,24,0.55) 48%," +
+  " rgba(10,10,24,0.18) 70%," +
+  " transparent 88%)";
 
-const btn = [
-  "px-5 py-3",
-  "font-mono",
-  "text-[11px] uppercase tracking-[0.14em]",
+const scrimMobile =
+  "linear-gradient(to top," +
+  " rgba(10,10,24,0.97) 0%," +
+  " rgba(10,10,24,0.88) 34%," +
+  " rgba(10,10,24,0.45) 62%," +
+  " rgba(10,10,24,0.30) 100%)";
+
+const shout = [
+  "block font-semibold uppercase",
+  "text-[clamp(48px,8.2vw,132px)]",
+  "leading-[0.83] tracking-[-0.055em]",
 ].join(" ");
 
-const btnPrimary = `${btn} border border-silk bg-silk text-void`;
-const btnGhost = `${btn} border border-trace transition-colors hover:border-copper hover:text-copper`;
-
-const headline = [
-  "max-w-[15ch]",
-  "font-display",
-  "text-[clamp(38px,7.2vw,92px)]",
-  "font-semibold leading-[0.96] tracking-[-0.035em]",
+const whisper = [
+  "mt-6 block max-w-[20ch] font-light text-muted",
+  "text-[clamp(18px,2vw,30px)]",
+  "leading-[1.15] tracking-[-0.02em]",
 ].join(" ");
 
 const lede = [
-  "mt-7 max-w-[46ch]",
-  "text-[clamp(14.5px,1.35vw,17px)]",
-  "font-light leading-relaxed text-legend",
+  "mt-8 max-w-[46ch] border-l border-line pl-5",
+  "text-[15px] font-light leading-[1.7] text-muted",
 ].join(" ");
 
-const railRow = [
-  "flex justify-between gap-6",
-  "border-b border-dashed border-trace",
-  "py-[7px] last:border-b-0",
+const btn = [
+  "label-lg cursor-pointer rounded-[2px] px-[24px] py-[15px]",
+  "border border-line text-text",
+  "transition-[border-color,background-color] duration-500",
+  "hover:border-line-hi hover:bg-white/[0.04]",
 ].join(" ");
 
-// headline is split by hand — line breaks are a design decision,
-// not something to leave to the browser
-const LINES = [
-  "I build software",
-  "that turns ideas into",
-  "something real.",
-];
+const btnSolid = [
+  "label-lg cursor-pointer rounded-[2px] px-[24px] py-[15px]",
+  "border border-text bg-text text-bg",
+  "transition-colors duration-500 hover:bg-white hover:border-white",
+].join(" ");
 
-const STATUS: [string, string][] = [
-  ["Role", "Software Dev"],
-  ["Org", "Dataclap"],
-  ["Since", "Jun 2024"],
-  ["Building", "LetsCook"],
-  ["Origin", "B.E. ECE"],
+const pill = [
+  "label inline-flex items-center gap-[9px]",
+  "rounded-full border border-line px-[13px] py-[7px]",
+].join(" ");
+
+const copyBlock = [
+  "absolute left-(--gut) top-1/2 z-4 w-[min(52vw,820px)]",
+  "-translate-y-1/2",
+  "max-lg:top-auto max-lg:bottom-[11%] max-lg:w-auto",
+  "max-lg:translate-y-0 max-lg:right-(--gut)",
+].join(" ");
+
+const stackRow = [
+  "absolute bottom-6 left-(--gut) z-5",
+  "flex max-w-[52vw] flex-wrap items-center gap-x-5 gap-y-2",
+  "max-lg:max-w-none max-lg:right-(--gut)",
+].join(" ");
+
+// the copy rides the same clock as the video: it holds through the
+// first third of the push-in, then clears out as the shot closes in
+const fadeOut = {
+  opacity: "max(0, calc(1 - (var(--p) - 0.35) * 2.6))",
+} as React.CSSProperties;
+
+const STACK = [
+  "Next.js",
+  "React",
+  "TypeScript",
+  "Node",
+  "Python",
+  "MongoDB",
+  "LLM APIs",
+  "RAG",
+  "n8n",
 ];
 
 export default function Hero() {
   return (
-    <header className="relative grid min-h-svh content-center overflow-hidden px-(--gut) pb-20 pt-32">
-      <BoardCanvas />
-
-      {/* text scrim — copper never competes with the headline */}
+    <ScrollScene>
       <div
-        className="pointer-events-none absolute inset-0 z-1"
+        className="pointer-events-none absolute inset-0 z-2 max-lg:hidden"
         style={{ background: scrim }}
+        aria-hidden
+      />
+      <div
+        className="pointer-events-none absolute inset-0 z-2 lg:hidden"
+        style={{ background: scrimMobile }}
+        aria-hidden
       />
 
-      {/* silkscreen stays in the DOM — crisp text, no font loading in WebGL */}
-      <div className="pointer-events-none absolute inset-0 z-2">
-        <span
-          className="legend boot-fade absolute bottom-10 left-(--gut) opacity-40"
-          style={{ "--d": "2600ms" } as React.CSSProperties}
+      <Nav />
+
+      <div className={copyBlock} style={fadeOut}>
+        <div
+          className="rise mb-8"
+          style={{ "--d": "480ms" } as React.CSSProperties}
         >
-          U1 · LGK//2026
-        </span>
-        <span
-          className="legend boot-fade absolute bottom-10 right-(--gut) opacity-40"
-          style={{ "--d": "2750ms" } as React.CSSProperties}
-        >
-          REV 0.2 · TN, IN
-        </span>
-      </div>
-
-      <div className="relative z-3 grid w-full max-w-[1440px] items-start gap-12 lg:grid-cols-[minmax(0,1fr)_auto]">
-        <div>
-          <div
-            className="legend boot-fade mb-7 flex items-center gap-3"
-            style={{ "--d": "2050ms" } as React.CSSProperties}
-          >
-            <span className="boot-dot size-[5px] rounded-full bg-(--accent)" />
-            <span>Software Developer · AI Builder</span>
-          </div>
-
-          <h1 className={headline}>
-            {LINES.map((line, i) => (
-              <span key={line} className="boot-line">
-                <span style={{ "--d": `${1450 + i * 110}ms` } as React.CSSProperties}>
-                  {line}
-                </span>
-              </span>
-            ))}
-          </h1>
-
-          <p
-            className={`${lede} boot-fade`}
-            style={{ "--d": "2150ms" } as React.CSSProperties}
-          >
-            {"I'm "}
-            <strong className="font-medium text-silk">Logesh</strong>
-            {", a software developer and builder focused on web applications,"}
-            {" AI-powered products and practical automation. Currently working at "}
-            <strong className="font-medium text-silk">Dataclap</strong>
-            {" while building "}
-            <strong className="font-medium text-silk">LetsCook</strong>
-            {" alongside my work."}
-          </p>
-
-          <div
-            className="boot-fade mt-9 flex flex-wrap gap-3"
-            style={{ "--d": "2300ms" } as React.CSSProperties}
-          >
-            <a href="#work" className={btnPrimary}>
-              Explore my work
-            </a>
-            <a href="#contact" className={btnGhost}>
-              {"Let's connect"}
-            </a>
-          </div>
+          <span className={pill}>
+            <span className="size-[5px] rounded-full bg-text" />
+            Building LetsCook · open to collaboration
+          </span>
         </div>
 
-        <aside
-          className="boot-fade min-w-[236px] border border-trace bg-board/70 px-5 py-4 backdrop-blur-[2px]"
-          style={{ "--d": "2400ms" } as React.CSSProperties}
+        <h1>
+          <span
+            className={`${shout} rise`}
+            style={{ "--d": "600ms" } as React.CSSProperties}
+          >
+            I Build
+          </span>
+          <span
+            className={`${shout} glow-ice rise`}
+            style={{ "--d": "710ms" } as React.CSSProperties}
+          >
+            Software
+          </span>
+          <span
+            className={`${whisper} rise`}
+            style={{ "--d": "870ms" } as React.CSSProperties}
+          >
+            that turns ideas into something real.
+          </span>
+        </h1>
+
+        <p
+          className={`${lede} rise`}
+          style={{ "--d": "1010ms" } as React.CSSProperties}
         >
-          {STATUS.map(([k, v]) => (
-            <div key={k} className={railRow}>
-              <span className="legend">{k}</span>
-              <span className="font-mono text-[10.5px] text-silk">{v}</span>
-            </div>
-          ))}
-        </aside>
+          {"I'm "}
+          <b className="font-medium text-text">Logesh</b>
+          {" — a software developer and AI builder."}
+          {" Web applications, AI-powered products and practical"}
+          {" automation. Currently at "}
+          <b className="font-medium text-text">Dataclap</b>
+          {", building "}
+          <b className="font-medium text-text">LetsCook</b>
+          {" alongside my work."}
+        </p>
+
+        <div
+          className="rise mt-10 flex flex-wrap gap-[10px]"
+          style={{ "--d": "1140ms" } as React.CSSProperties}
+        >
+          <Link href="#work" className={btnSolid}>
+            See my work
+          </Link>
+          <Link href="#contact" className={btn}>
+            Get in touch
+          </Link>
+        </div>
       </div>
-    </header>
+
+      <div
+        className={`${stackRow} rise`}
+        style={{ ...fadeOut, "--d": "1300ms" } as React.CSSProperties}
+      >
+        <span className="label opacity-55">Built with</span>
+        {STACK.map((s) => (
+          <span key={s} className="label text-text/55">
+            {s}
+          </span>
+        ))}
+      </div>
+
+      <ScrollMeter />
+    </ScrollScene>
   );
 }
