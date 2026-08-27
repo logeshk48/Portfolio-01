@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { useCapability } from "@/lib/useCapability";
 
 const DURATION_FALLBACK = 6;
+const FPS = 24;
 
 /**
  * Scroll drives playback.
@@ -48,6 +49,7 @@ export default function ScrollScene({
 
     let frame = 0;
     let eased = 0;
+    let lastFrame = -1;
 
     const tick = () => {
       const rect = el.getBoundingClientRect();
@@ -55,7 +57,7 @@ export default function ScrollScene({
       const raw = total > 0 ? -rect.top / total : 0;
       const p = Math.min(1, Math.max(0, raw));
 
-      eased += (p - eased) * 0.12;
+      eased += (p - eased) * 0.16;
 
       pin.style.setProperty("--p", eased.toFixed(4));
 
@@ -63,11 +65,16 @@ export default function ScrollScene({
         ? vid.duration
         : DURATION_FALLBACK;
 
-      // 0.02 keeps us off the very last frame, which some decoders
-      // refuse to render and leave blank
-      const target = Math.min(dur - 0.02, eased * dur);
-      if (vid.readyState >= 2 && Math.abs(vid.currentTime - target) > 0.005) {
-        vid.currentTime = target;
+      // Snap to frame boundaries. Asking for arbitrary timestamps makes
+      // the decoder work out a frame it then rounds away anyway — at
+      // 24fps that is most seeks doing nothing. Only move when we have
+      // actually crossed into a new frame.
+      const lastIdx = Math.floor(dur * FPS) - 1;
+      const want = Math.min(lastIdx, Math.round(eased * dur * FPS));
+
+      if (vid.readyState >= 2 && want !== lastFrame) {
+        lastFrame = want;
+        vid.currentTime = want / FPS;
       }
 
       frame = requestAnimationFrame(tick);
