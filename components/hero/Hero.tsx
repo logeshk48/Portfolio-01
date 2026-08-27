@@ -21,10 +21,18 @@ const scrimMobile =
   " rgba(10,10,24,0.45) 62%," +
   " rgba(10,10,24,0.30) 100%)";
 
+// the nav sits over his hair at the end of the push-in, so the top
+// edge needs its own wash
+const topScrim =
+  "linear-gradient(to bottom," +
+  " rgba(10,10,24,0.88) 0%," +
+  " rgba(10,10,24,0.45) 55%," +
+  " transparent 100%)";
+
 const shout = [
-  "block font-semibold uppercase",
-  "text-[clamp(48px,8.2vw,132px)]",
-  "leading-[0.83] tracking-[-0.055em]",
+  "block font-display font-bold uppercase",
+  "text-[clamp(46px,7.9vw,128px)]",
+  "leading-[0.82] tracking-[-0.045em]",
 ].join(" ");
 
 const whisper = [
@@ -101,6 +109,12 @@ export default function Hero() {
         aria-hidden
       />
 
+      <div
+        className="pointer-events-none absolute inset-x-0 top-0 z-2 h-32"
+        style={{ background: topScrim }}
+        aria-hidden
+      />
+
       <Nav />
 
       <div className={copyBlock} style={fadeOut}>
@@ -119,19 +133,19 @@ export default function Hero() {
             className={`${shout} rise`}
             style={{ "--d": "600ms" } as React.CSSProperties}
           >
-            I Build
+            Ideas Don&apos;t
           </span>
           <span
             className={`${shout} glow-ice rise`}
             style={{ "--d": "710ms" } as React.CSSProperties}
           >
-            Software
+            Ship Themselves
           </span>
           <span
             className={`${whisper} rise`}
             style={{ "--d": "870ms" } as React.CSSProperties}
           >
-            that turns ideas into something real.
+            So I build them. Web apps, AI products, automation.
           </span>
         </h1>
 
@@ -141,13 +155,13 @@ export default function Hero() {
         >
           {"I'm "}
           <b className="font-medium text-text">Logesh</b>
-          {" — a software developer and AI builder."}
-          {" Web applications, AI-powered products and practical"}
-          {" automation. Currently at "}
+          {" — I turn ideas into things people actually use."}
+          {" Started in electronics, ended up writing software."}
+          {" Currently at "}
           <b className="font-medium text-text">Dataclap</b>
           {", building "}
           <b className="font-medium text-text">LetsCook</b>
-          {" alongside my work."}
+          {" after hours."}
         </p>
 
         <div

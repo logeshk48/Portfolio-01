@@ -16,6 +16,10 @@ const skipLink = [
 
 const fonts = `${GeistSans.variable} ${GeistMono.variable}`;
 
+const clash =
+  "https://api.fontshare.com/v2/css" +
+  "?f[]=clash-display@600,700&display=swap";
+
 const description =
   "Logesh is a software developer and AI builder focused on web" +
   " applications, AI-powered products, automation and LetsCook.";
@@ -50,6 +54,10 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={fonts}>
+      <head>
+        <link rel="preconnect" href="https://api.fontshare.com" />
+        <link rel="stylesheet" href={clash} />
+      </head>
       <body>
         <Link href="#main" className={skipLink}>
           Skip to content
