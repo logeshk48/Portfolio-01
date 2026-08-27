@@ -1,13 +1,6 @@
 import Link from "next/link";
 
-const link = [
-  "label transition-colors duration-500 hover:text-text",
-].join(" ");
-
-const bar = [
-  "absolute inset-x-0 top-0 z-6",
-  "flex items-center justify-between px-(--gut) py-[26px]",
-].join(" ");
+const link = "label transition-colors duration-500 hover:text-text";
 
 const LINKS: [string, string][] = [
   ["Work", "#work"],
@@ -18,7 +11,7 @@ const LINKS: [string, string][] = [
 
 export default function Nav() {
   return (
-    <nav className={bar}>
+    <nav className="flex items-center justify-between">
       <div
         className="rise caps text-[14px] text-text"
         style={{ "--d": "200ms" } as React.CSSProperties}
@@ -27,7 +20,7 @@ export default function Nav() {
       </div>
 
       <div
-        className="rise flex items-center gap-[30px]"
+        className="rise flex items-center gap-8"
         style={{ "--d": "300ms" } as React.CSSProperties}
       >
         {LINKS.map(([label, href], i) => (

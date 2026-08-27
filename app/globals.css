@@ -2,9 +2,9 @@
 
 /* ─────────────────────────────────────────────
    PORTFOLIO — LOGESH
-   A room lit by a screen. Violet and ice rim the dark,
-   one candle keeps it warm. Colour lives in the light,
-   never in the interface.
+   A room lit by a screen. The only accent is the cyan
+   the monitors throw — pulled from the footage, never
+   invented, and used on one word at a time.
    ───────────────────────────────────────────── */
 
 @theme {
@@ -86,12 +86,58 @@ html.lenis body { height: auto; }
   font-weight: 500;
 }
 
-/* a word can glow — used once, on one word, never more */
-.glow-ice {
-  color: #d6f7ff;
-  text-shadow:
-    0 0 18px rgba(99, 232, 255, 0.55),
-    0 0 54px rgba(99, 232, 255, 0.28);
+/* the accent is pulled from the footage: it is the exact cyan the
+   monitors throw. Used on one word only. */
+.ice {
+  color: #63e8ff;
+}
+
+/* pill buttons: a fill that wipes up from the bottom, and an arrow
+   that leaves before the label does */
+.pill-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  overflow: hidden;
+  border-radius: 999px;
+  padding: 15px 26px;
+  isolation: isolate;
+}
+.pill-btn > * {
+  position: relative;
+  z-index: 1;
+}
+.pill-btn::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: #f2f1fa;
+  transform: translateY(101%);
+  transition: transform 0.55s var(--ease-slow);
+}
+.pill-btn:hover::before {
+  transform: translateY(0);
+}
+.pill-btn:hover {
+  color: #0a0a18;
+  border-color: #f2f1fa;
+}
+.pill-btn .arw {
+  transition: transform 0.55s var(--ease-slow);
+}
+.pill-btn:hover .arw {
+  transform: translateX(4px);
+}
+
+/* the solid one runs the same wipe in reverse */
+.pill-solid::before {
+  background: #63e8ff;
+}
+.pill-solid:hover {
+  color: #0a0a18;
+  border-color: #63e8ff;
 }
 
 /* ── grain: stops flat black banding on cheap panels ── */

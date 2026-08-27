@@ -3,60 +3,72 @@ import Nav from "@/components/ui/Nav";
 import ScrollMeter from "./ScrollMeter";
 import ScrollScene from "./ScrollScene";
 
-// he sits right of centre with bright code monitors behind him, so the
-// left has to be held down hard. Mobile centres the subject, so that
-// gets a vertical wash instead.
+/**
+ * One flex column owns the whole viewport: nav at the top, copy in the
+ * middle, meta at the bottom. Everything used to be positioned
+ * absolutely and independently, which is exactly how blocks end up
+ * overlapping at sizes nobody tested. Now they share a layout and
+ * collisions are impossible.
+ */
+
 const scrim =
   "linear-gradient(to right," +
-  " rgba(10,10,24,0.96) 0%," +
-  " rgba(10,10,24,0.90) 26%," +
-  " rgba(10,10,24,0.55) 48%," +
-  " rgba(10,10,24,0.18) 70%," +
-  " transparent 88%)";
+  " rgba(10,10,24,0.97) 0%," +
+  " rgba(10,10,24,0.92) 30%," +
+  " rgba(10,10,24,0.58) 52%," +
+  " rgba(10,10,24,0.18) 72%," +
+  " transparent 90%)";
 
 const scrimMobile =
   "linear-gradient(to top," +
   " rgba(10,10,24,0.97) 0%," +
-  " rgba(10,10,24,0.88) 34%," +
-  " rgba(10,10,24,0.45) 62%," +
-  " rgba(10,10,24,0.30) 100%)";
+  " rgba(10,10,24,0.90) 40%," +
+  " rgba(10,10,24,0.55) 68%," +
+  " rgba(10,10,24,0.35) 100%)";
 
-// the nav sits over his hair at the end of the push-in, so the top
-// edge needs its own wash
 const topScrim =
   "linear-gradient(to bottom," +
-  " rgba(10,10,24,0.88) 0%," +
-  " rgba(10,10,24,0.45) 55%," +
+  " rgba(10,10,24,0.85) 0%," +
   " transparent 100%)";
+
+const shell = [
+  "relative z-4 flex h-full flex-col",
+  "px-(--gut) pb-7 pt-7",
+].join(" ");
 
 const shout = [
   "block font-display font-bold uppercase",
-  "text-[clamp(46px,7.9vw,128px)]",
-  "leading-[0.82] tracking-[-0.045em]",
+  "text-[clamp(44px,7.4vw,118px)]",
+  "leading-[0.86] tracking-[-0.03em]",
 ].join(" ");
 
-const whisper = [
-  "mt-6 block max-w-[20ch] font-light text-muted",
-  "text-[clamp(18px,2vw,30px)]",
-  "leading-[1.15] tracking-[-0.02em]",
+const sub = [
+  "mt-7 max-w-[26ch] font-display font-semibold",
+  "text-[clamp(19px,2.1vw,32px)]",
+  "leading-[1.16] tracking-[-0.02em] text-muted",
 ].join(" ");
 
-const lede = [
-  "mt-8 max-w-[46ch] border-l border-line pl-5",
-  "text-[15px] font-light leading-[1.7] text-muted",
+// the paragraph became a spec block: two labelled rows read faster
+// than prose and look like documentation rather than an about-me
+const specRow = [
+  "flex gap-5 border-b border-line/70 py-[11px] last:border-b-0",
+  "max-sm:flex-col max-sm:gap-1",
+].join(" ");
+
+const specKey = "label w-[74px] shrink-0 pt-[3px]";
+
+const specVal = [
+  "text-[14.5px] font-light leading-[1.6] text-muted",
 ].join(" ");
 
 const btn = [
-  "label-lg cursor-pointer rounded-[2px] px-[24px] py-[15px]",
-  "border border-line text-text",
-  "transition-[border-color,background-color] duration-500",
-  "hover:border-line-hi hover:bg-white/[0.04]",
+  "pill-btn label-lg border border-line text-text",
+  "transition-colors duration-500",
 ].join(" ");
 
 const btnSolid = [
-  "label-lg cursor-pointer rounded-[2px] px-[24px] py-[15px]",
-  "border border-text bg-text text-bg",
-  "transition-colors duration-500 hover:bg-white hover:border-white",
+  "pill-btn pill-solid label-lg border border-line text-text",
+  "transition-colors duration-500",
 ].join(" ");
 
 const pill = [
@@ -64,36 +76,18 @@ const pill = [
   "rounded-full border border-line px-[13px] py-[7px]",
 ].join(" ");
 
-const copyBlock = [
-  "absolute left-(--gut) top-1/2 z-4 w-[min(52vw,820px)]",
-  "-translate-y-1/2",
-  "max-lg:top-auto max-lg:bottom-[11%] max-lg:w-auto",
-  "max-lg:translate-y-0 max-lg:right-(--gut)",
+const foot = [
+  "flex items-end justify-between gap-8",
+  "border-t border-line/70 pt-5",
 ].join(" ");
 
-const stackRow = [
-  "absolute bottom-6 left-(--gut) z-5",
-  "flex max-w-[52vw] flex-wrap items-center gap-x-5 gap-y-2",
-  "max-lg:max-w-none max-lg:right-(--gut)",
-].join(" ");
-
-// the copy rides the same clock as the video: it holds through the
-// first third of the push-in, then clears out as the shot closes in
+// copy rides the same clock as the footage: holds, then clears as the
+// shot closes in
 const fadeOut = {
-  opacity: "max(0, calc(1 - (var(--p) - 0.35) * 2.6))",
+  opacity: "max(0, calc(1 - (var(--p) - 0.30) * 2.4))",
 } as React.CSSProperties;
 
-const STACK = [
-  "Next.js",
-  "React",
-  "TypeScript",
-  "Node",
-  "Python",
-  "MongoDB",
-  "LLM APIs",
-  "RAG",
-  "n8n",
-];
+const STACK = ["Next.js", "React", "TypeScript", "Node", "MongoDB", "RAG"];
 
 export default function Hero() {
   return (
@@ -108,88 +102,115 @@ export default function Hero() {
         style={{ background: scrimMobile }}
         aria-hidden
       />
-
       <div
-        className="pointer-events-none absolute inset-x-0 top-0 z-2 h-32"
+        className="pointer-events-none absolute inset-x-0 top-0 z-2 h-28"
         style={{ background: topScrim }}
         aria-hidden
       />
 
-      <Nav />
-
-      <div className={copyBlock} style={fadeOut}>
-        <div
-          className="rise mb-8"
-          style={{ "--d": "480ms" } as React.CSSProperties}
-        >
-          <span className={pill}>
-            <span className="size-[5px] rounded-full bg-text" />
-            Building LetsCook · open to collaboration
-          </span>
-        </div>
-
-        <h1>
-          <span
-            className={`${shout} rise`}
-            style={{ "--d": "600ms" } as React.CSSProperties}
-          >
-            Ideas Don&apos;t
-          </span>
-          <span
-            className={`${shout} glow-ice rise`}
-            style={{ "--d": "710ms" } as React.CSSProperties}
-          >
-            Ship Themselves
-          </span>
-          <span
-            className={`${whisper} rise`}
-            style={{ "--d": "870ms" } as React.CSSProperties}
-          >
-            So I build them. Web apps, AI products, automation.
-          </span>
-        </h1>
-
-        <p
-          className={`${lede} rise`}
-          style={{ "--d": "1010ms" } as React.CSSProperties}
-        >
-          {"I'm "}
-          <b className="font-medium text-text">Logesh</b>
-          {" — I turn ideas into things people actually use."}
-          {" Started in electronics, ended up writing software."}
-          {" Currently at "}
-          <b className="font-medium text-text">Dataclap</b>
-          {", building "}
-          <b className="font-medium text-text">LetsCook</b>
-          {" after hours."}
-        </p>
+      <div className={shell}>
+        <Nav />
 
         <div
-          className="rise mt-10 flex flex-wrap gap-[10px]"
-          style={{ "--d": "1140ms" } as React.CSSProperties}
+          className="flex flex-1 items-center max-lg:items-end max-lg:pb-6"
+          style={fadeOut}
         >
-          <Link href="#work" className={btnSolid}>
-            See my work
-          </Link>
-          <Link href="#contact" className={btn}>
-            Get in touch
-          </Link>
+          <div className="w-[min(54vw,760px)] max-lg:w-full">
+            <div
+              className="rise mb-9"
+              style={{ "--d": "480ms" } as React.CSSProperties}
+            >
+              <span className={pill}>
+                <span className="size-[5px] rounded-full bg-text" />
+                Building LetsCook
+              </span>
+            </div>
+
+            <h1>
+              <span
+                className={`${shout} rise`}
+                style={{ "--d": "600ms" } as React.CSSProperties}
+              >
+                <span className="ice">Ideas</span> Don&apos;t
+              </span>
+              <span
+                className={`${shout} rise`}
+                style={{ "--d": "710ms" } as React.CSSProperties}
+              >
+                Ship Themselves
+              </span>
+            </h1>
+
+            <p
+              className={`${sub} rise`}
+              style={{ "--d": "850ms" } as React.CSSProperties}
+            >
+              So I <span className="text-text">build</span> them.{" "}
+              <span className="text-text">Web apps</span>,{" "}
+              <span className="text-text">AI products</span>,{" "}
+              <span className="text-text">automation</span>.
+            </p>
+
+            <div
+              className="rise mt-9 max-w-[44ch] border-t border-line/70"
+              style={{ "--d": "990ms" } as React.CSSProperties}
+            >
+              <div className={specRow}>
+                <span className={specKey}>Now</span>
+                <span className={specVal}>
+                  <b className="font-medium text-text">Dataclap</b>
+                  {" by day, "}
+                  <b className="font-medium text-text">LetsCook</b>
+                  {" after hours"}
+                </span>
+              </div>
+              <div className={specRow}>
+                <span className={specKey}>Origin</span>
+                <span className={specVal}>
+                  Started in electronics, ended up writing software
+                </span>
+              </div>
+            </div>
+
+            <div
+              className="rise mt-10 flex flex-wrap gap-[10px]"
+              style={{ "--d": "1120ms" } as React.CSSProperties}
+            >
+              <Link href="#work" className={btnSolid}>
+                <span>See my work</span>
+                <span className="arw" aria-hidden>
+                  &#8594;
+                </span>
+              </Link>
+              <Link href="#contact" className={btn}>
+                <span>Get in touch</span>
+                <span className="arw" aria-hidden>
+                  &#8599;
+                </span>
+              </Link>
+            </div>
+          </div>
+        </div>
+
+        <div
+          className={`${foot} rise`}
+          style={{ "--d": "1280ms" } as React.CSSProperties}
+        >
+          <div
+            className="flex flex-wrap items-center gap-x-5 gap-y-2"
+            style={fadeOut}
+          >
+            <span className="label opacity-50">Stack</span>
+            {STACK.map((s) => (
+              <span key={s} className="label text-text/60">
+                {s}
+              </span>
+            ))}
+          </div>
+
+          <ScrollMeter />
         </div>
       </div>
-
-      <div
-        className={`${stackRow} rise`}
-        style={{ ...fadeOut, "--d": "1300ms" } as React.CSSProperties}
-      >
-        <span className="label opacity-55">Built with</span>
-        {STACK.map((s) => (
-          <span key={s} className="label text-text/55">
-            {s}
-          </span>
-        ))}
-      </div>
-
-      <ScrollMeter />
     </ScrollScene>
   );
 }
