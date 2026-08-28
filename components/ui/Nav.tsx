@@ -1,7 +1,5 @@
 import Link from "next/link";
 
-const link = "label transition-colors duration-500 hover:text-text";
-
 const LINKS: [string, string][] = [
   ["Work", "#work"],
   ["About", "#about"],
@@ -9,27 +7,49 @@ const LINKS: [string, string][] = [
   ["Contact", "#contact"],
 ];
 
+// name and role sit on one baseline, split by a hairline — the role
+// is the first thing read after the name, so it belongs beside it
+const brand = [
+  "rise flex items-center gap-4",
+].join(" ");
+
+const rule = "h-[13px] w-px bg-line-hi max-sm:hidden";
+
+const role = [
+  "label flex items-center gap-[9px] max-sm:hidden",
+].join(" ");
+
 export default function Nav() {
   return (
-    <nav className="flex items-center justify-between">
+    <nav className="flex items-center justify-between gap-8">
       <div
-        className="rise caps text-[14px] text-text"
+        className={brand}
         style={{ "--d": "200ms" } as React.CSSProperties}
       >
-        Logesh<span className="text-muted">™</span>
+        <Link href="/" className="caps text-[14px] leading-none text-text">
+          Logesh<span className="text-muted">&#8202;K</span>
+        </Link>
+
+        <span className={rule} aria-hidden />
+
+        <span className={role}>
+          <span className="dot size-[5px] rounded-full bg-ice" />
+          Software Developer · AI Builder
+        </span>
       </div>
 
       <div
-        className="rise flex items-center gap-8"
+        className="rise flex items-center gap-9"
         style={{ "--d": "300ms" } as React.CSSProperties}
       >
         {LINKS.map(([label, href], i) => (
           <Link
             key={label}
             href={href}
-            className={`${link} ${i < 3 ? "max-md:hidden" : ""}`}
+            className={`label nav-link ${i < 3 ? "max-md:hidden" : ""}`}
           >
-            {label}
+            <i>{label}</i>
+            <i>{label}</i>
           </Link>
         ))}
       </div>

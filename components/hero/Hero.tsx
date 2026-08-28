@@ -31,34 +31,36 @@ const topScrim =
   " rgba(10,10,24,0.85) 0%," +
   " transparent 100%)";
 
+// the gap is on the column, not on any one block — so the nav, the
+// copy and the meter can never crowd each other at any height
 const shell = [
-  "relative z-4 flex h-full flex-col",
+  "relative z-4 flex h-full flex-col gap-12 lg:gap-20",
   "px-(--gut) pb-7 pt-7",
 ].join(" ");
 
 const shout = [
   "block font-display font-bold uppercase",
-  "text-[clamp(44px,7.4vw,118px)]",
+  "text-[clamp(42px,7vw,112px)]",
   "leading-[0.86] tracking-[-0.03em]",
 ].join(" ");
 
 const sub = [
-  "mt-7 max-w-[26ch] font-display font-semibold",
-  "text-[clamp(19px,2.1vw,32px)]",
+  "mt-6 max-w-[26ch] font-display font-semibold",
+  "text-[clamp(18px,1.9vw,28px)]",
   "leading-[1.16] tracking-[-0.02em] text-muted",
 ].join(" ");
 
-// the paragraph became a spec block: two labelled rows read faster
-// than prose and look like documentation rather than an about-me
+// the paragraph became a spec block: labelled rows read faster than
+// prose and look like documentation rather than an about-me
 const specRow = [
-  "flex gap-5 border-b border-line/70 py-[11px] last:border-b-0",
+  "flex gap-5 border-b border-line/70 py-[9px] last:border-b-0",
   "max-sm:flex-col max-sm:gap-1",
 ].join(" ");
 
 const specKey = "label w-[74px] shrink-0 pt-[3px]";
 
 const specVal = [
-  "text-[14.5px] font-light leading-[1.6] text-muted",
+  "text-[14px] font-light leading-[1.55] text-muted",
 ].join(" ");
 
 const btn = [
@@ -71,23 +73,15 @@ const btnSolid = [
   "transition-colors duration-500",
 ].join(" ");
 
-const pill = [
-  "label inline-flex items-center gap-[9px]",
-  "rounded-full border border-line px-[13px] py-[7px]",
-].join(" ");
-
-const foot = [
-  "flex items-end justify-between gap-8",
-  "border-t border-line/70 pt-5",
-].join(" ");
+// the footer holds only the meter now — the stack list moves to its
+// own section further down, where it can be read properly
+const foot = "flex items-center justify-end border-t border-line/70 pt-5";
 
 // copy rides the same clock as the footage: holds, then clears as the
 // shot closes in
 const fadeOut = {
   opacity: "max(0, calc(1 - (var(--p) - 0.30) * 2.4))",
 } as React.CSSProperties;
-
-const STACK = ["Next.js", "React", "TypeScript", "Node", "MongoDB", "RAG"];
 
 export default function Hero() {
   return (
@@ -116,16 +110,6 @@ export default function Hero() {
           style={fadeOut}
         >
           <div className="w-[min(54vw,760px)] max-lg:w-full">
-            <div
-              className="rise mb-9"
-              style={{ "--d": "480ms" } as React.CSSProperties}
-            >
-              <span className={pill}>
-                <span className="size-[5px] rounded-full bg-text" />
-                Building LetsCook
-              </span>
-            </div>
-
             <h1>
               <span
                 className={`${shout} rise`}
@@ -152,28 +136,33 @@ export default function Hero() {
             </p>
 
             <div
-              className="rise mt-9 max-w-[44ch] border-t border-line/70"
+              className="rise mt-7 max-w-[46ch] border-t border-line/70"
               style={{ "--d": "990ms" } as React.CSSProperties}
             >
               <div className={specRow}>
-                <span className={specKey}>Now</span>
+                <span className={specKey}>Working</span>
                 <span className={specVal}>
                   <b className="font-medium text-text">Dataclap</b>
-                  {" by day, "}
-                  <b className="font-medium text-text">LetsCook</b>
-                  {" after hours"}
+                  {" — data annotation, since Jun 2024"}
                 </span>
               </div>
               <div className={specRow}>
-                <span className={specKey}>Origin</span>
+                <span className={specKey}>Building</span>
                 <span className={specVal}>
-                  Started in electronics, ended up writing software
+                  <b className="font-medium text-text">LetsCook</b>
+                  {" — web, AI agents, automation"}
+                </span>
+              </div>
+              <div className={specRow}>
+                <span className={specKey}>Trained</span>
+                <span className={specVal}>
+                  {"B.E. Electronics — then taught myself software"}
                 </span>
               </div>
             </div>
 
             <div
-              className="rise mt-10 flex flex-wrap gap-[10px]"
+              className="rise mt-8 flex flex-wrap gap-[10px]"
               style={{ "--d": "1120ms" } as React.CSSProperties}
             >
               <Link href="#work" className={btnSolid}>
@@ -196,18 +185,6 @@ export default function Hero() {
           className={`${foot} rise`}
           style={{ "--d": "1280ms" } as React.CSSProperties}
         >
-          <div
-            className="flex flex-wrap items-center gap-x-5 gap-y-2"
-            style={fadeOut}
-          >
-            <span className="label opacity-50">Stack</span>
-            {STACK.map((s) => (
-              <span key={s} className="label text-text/60">
-                {s}
-              </span>
-            ))}
-          </div>
-
           <ScrollMeter />
         </div>
       </div>

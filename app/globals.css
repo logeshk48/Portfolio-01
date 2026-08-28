@@ -91,6 +91,14 @@ html.lenis body { height: auto; }
 .ice {
   color: #63e8ff;
 }
+/* a slow pulse on the status dot — the only looping motion on the page */
+.dot {
+  animation: dotPulse 2.8s ease-in-out infinite;
+}
+@keyframes dotPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
 
 /* pill buttons: a fill that wipes up from the bottom, and an arrow
    that leaves before the label does */
@@ -138,6 +146,26 @@ html.lenis body { height: auto; }
 .pill-solid:hover {
   color: #0a0a18;
   border-color: #63e8ff;
+}
+/* nav links: the label rolls up and a duplicate rolls in behind it.
+   Two stacked copies in a clipped box — cheaper and smoother than
+   animating opacity, and it reads as mechanical rather than fading. */
+.nav-link {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  height: 1.05em;
+}
+.nav-link i {
+  display: block;
+  font-style: normal;
+  transition: transform 0.55s var(--ease-slow);
+}
+.nav-link i + i {
+  color: #f2f1fa;
+}
+.nav-link:hover i {
+  transform: translateY(-100%);
 }
 
 /* ── grain: stops flat black banding on cheap panels ── */
