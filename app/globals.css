@@ -4,7 +4,7 @@
    PORTFOLIO — LOGESH
    A room lit by a screen. The only accent is the cyan
    the monitors throw — pulled from the footage, never
-   invented, and used on one word at a time.
+   invented, and used one word at a time.
    ───────────────────────────────────────────── */
 
 @theme {
@@ -91,6 +91,7 @@ html.lenis body { height: auto; }
 .ice {
   color: #63e8ff;
 }
+
 /* a slow pulse on the status dot — the only looping motion on the page */
 .dot {
   animation: dotPulse 2.8s ease-in-out infinite;
@@ -109,7 +110,7 @@ html.lenis body { height: auto; }
   gap: 10px;
   overflow: hidden;
   border-radius: 999px;
-  padding: 15px 26px;
+  padding: 13px 24px;
   isolation: isolate;
 }
 .pill-btn > * {
@@ -147,6 +148,7 @@ html.lenis body { height: auto; }
   color: #0a0a18;
   border-color: #63e8ff;
 }
+
 /* nav links: the label rolls up and a duplicate rolls in behind it.
    Two stacked copies in a clipped box — cheaper and smoother than
    animating opacity, and it reads as mechanical rather than fading. */
@@ -187,6 +189,65 @@ html.lenis body { height: auto; }
 }
 @keyframes rise {
   to { opacity: 1; transform: none; }
+}
+
+/* ── marquee ──────────────────────────────────
+   The track holds the list twice and slides exactly half its width,
+   so the moment it completes it is pixel-identical to where it began
+   — the loop has no seam because there is nothing to seam. Masked at
+   both edges so names dissolve into the margin instead of being
+   guillotined by the clip. */
+.rail {
+  position: relative;
+  overflow: hidden;
+  mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    #000 9%,
+    #000 91%,
+    transparent 100%
+  );
+}
+
+.rail-track {
+  display: flex;
+  width: max-content;
+  align-items: baseline;
+  gap: 2.5rem;
+  padding-right: 2.5rem;
+  animation: railRun var(--dur, 40s) linear infinite;
+  will-change: transform;
+}
+.rail-track[data-dir="back"] {
+  animation-direction: reverse;
+}
+
+/* pause on hover, so the notes are readable rather than a chase */
+.rail:hover .rail-track {
+  animation-play-state: paused;
+}
+
+@keyframes railRun {
+  from { transform: translate3d(0, 0, 0); }
+  to   { transform: translate3d(-50%, 0, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rail-track { animation: none; }
+}
+
+/* ── scroll reveal ────────────────────────────── */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity 1s var(--ease-slow),
+    transform 1s var(--ease-slow);
+  transition-delay: var(--d, 0ms);
+}
+.reveal.in {
+  opacity: 1;
+  transform: none;
 }
 
 /* ── probe cursor ─────────────────────────────── */
@@ -250,5 +311,6 @@ html.lenis body { height: auto; }
     scroll-behavior: auto !important;
   }
   .rise { opacity: 1; transform: none; }
+  .reveal { opacity: 1; transform: none; }
   .cursor-root { display: none; }
 }

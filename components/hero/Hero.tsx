@@ -34,33 +34,33 @@ const topScrim =
 // the gap is on the column, not on any one block — so the nav, the
 // copy and the meter can never crowd each other at any height
 const shell = [
-  "relative z-4 flex h-full flex-col gap-12 lg:gap-20",
-  "px-(--gut) pb-7 pt-7",
+  "relative z-4 flex h-full flex-col gap-8 lg:gap-10",
+  "px-(--gut) pb-6 pt-6",
 ].join(" ");
 
 const shout = [
   "block font-display font-bold uppercase",
-  "text-[clamp(42px,7vw,112px)]",
+  "text-[clamp(38px,6vw,94px)]",
   "leading-[0.86] tracking-[-0.03em]",
 ].join(" ");
 
 const sub = [
-  "mt-6 max-w-[26ch] font-display font-semibold",
-  "text-[clamp(18px,1.9vw,28px)]",
+  "mt-5 max-w-[30ch] font-display font-semibold",
+  "text-[clamp(17px,1.6vw,24px)]",
   "leading-[1.16] tracking-[-0.02em] text-muted",
 ].join(" ");
 
 // the paragraph became a spec block: labelled rows read faster than
 // prose and look like documentation rather than an about-me
 const specRow = [
-  "flex gap-5 border-b border-line/70 py-[9px] last:border-b-0",
+  "flex gap-5 border-b border-line/70 py-[8px] last:border-b-0",
   "max-sm:flex-col max-sm:gap-1",
 ].join(" ");
 
 const specKey = "label w-[74px] shrink-0 pt-[3px]";
 
 const specVal = [
-  "text-[14px] font-light leading-[1.55] text-muted",
+  "text-[13.5px] font-light leading-[1.5] text-muted",
 ].join(" ");
 
 const btn = [
@@ -73,9 +73,13 @@ const btnSolid = [
   "transition-colors duration-500",
 ].join(" ");
 
-// the footer holds only the meter now — the stack list moves to its
-// own section further down, where it can be read properly
-const foot = "flex items-center justify-end border-t border-line/70 pt-5";
+// the calls to action share the footer baseline with the meter, so the
+// bottom of the screen reads as one line rather than three stacked bits
+const foot = [
+  "flex items-center justify-between gap-8",
+  "border-t border-line/70 pt-5",
+  "max-sm:flex-col max-sm:items-start max-sm:gap-4",
+].join(" ");
 
 // copy rides the same clock as the footage: holds, then clears as the
 // shot closes in
@@ -136,7 +140,7 @@ export default function Hero() {
             </p>
 
             <div
-              className="rise mt-7 max-w-[46ch] border-t border-line/70"
+              className="rise mt-6 max-w-[46ch] border-t border-line/70"
               style={{ "--d": "990ms" } as React.CSSProperties}
             >
               <div className={specRow}>
@@ -160,31 +164,28 @@ export default function Hero() {
                 </span>
               </div>
             </div>
-
-            <div
-              className="rise mt-8 flex flex-wrap gap-[10px]"
-              style={{ "--d": "1120ms" } as React.CSSProperties}
-            >
-              <Link href="#work" className={btnSolid}>
-                <span>See my work</span>
-                <span className="arw" aria-hidden>
-                  &#8594;
-                </span>
-              </Link>
-              <Link href="#contact" className={btn}>
-                <span>Get in touch</span>
-                <span className="arw" aria-hidden>
-                  &#8599;
-                </span>
-              </Link>
-            </div>
           </div>
         </div>
 
         <div
           className={`${foot} rise`}
-          style={{ "--d": "1280ms" } as React.CSSProperties}
+          style={{ "--d": "1120ms" } as React.CSSProperties}
         >
+          <div className="flex flex-wrap gap-[10px]" style={fadeOut}>
+            <Link href="#work" className={btnSolid}>
+              <span>See my work</span>
+              <span className="arw" aria-hidden>
+                &#8594;
+              </span>
+            </Link>
+            <Link href="#contact" className={btn}>
+              <span>Get in touch</span>
+              <span className="arw" aria-hidden>
+                &#8599;
+              </span>
+            </Link>
+          </div>
+
           <ScrollMeter />
         </div>
       </div>
