@@ -1,80 +1,98 @@
 /**
- * The stack, grouped by what it does rather than by hype.
+ * The stack, as a console rather than a list.
  *
- * No proficiency percentages. Nobody believes "React 85%" and it
- * invites a question you cannot answer honestly. Each tool carries a
- * short note on its role instead — a reader learns more from "what is
- * this for" than from a bar chart.
+ * No proficiency bars. Seven groups, selectable, and the whole right
+ * column re-staggers on every switch — the transition is the design.
  */
 
-export interface Tool {
-  name: string;
-  note: string;
-}
-
 export interface StackGroup {
+  id: string;
   label: string;
-  items: Tool[];
+  items: string[];
 }
 
 export const STACK: StackGroup[] = [
   {
+    id: "frontend",
     label: "Frontend",
-    items: [
-      { name: "React", note: "Component UI" },
-      { name: "Next.js", note: "App Router, SSR" },
-      { name: "TypeScript", note: "Types end to end" },
-      { name: "Tailwind", note: "Design tokens" },
-      { name: "HTML", note: "Semantic markup" },
-      { name: "CSS", note: "Layout, motion" },
-    ],
+    items: ["React", "JavaScript", "Tailwind CSS", "HTML", "CSS"],
   },
   {
+    id: "backend",
     label: "Backend",
     items: [
-      { name: "Node.js", note: "Runtime" },
-      { name: "Express", note: "Routing, middleware" },
-      { name: "Python", note: "Scripts, data work" },
-      { name: "REST APIs", note: "Contracts between services" },
-      { name: "JWT", note: "Access and refresh tokens" },
+      "Node.js",
+      "Express.js",
+      "Python",
+      "REST APIs",
+      "Backend Development",
     ],
   },
   {
-    label: "Data",
+    id: "database",
+    label: "Database",
+    items: ["MongoDB", "SQL", "Firebase"],
+  },
+  {
+    id: "ai",
+    label: "AI / LLM",
     items: [
-      { name: "MongoDB", note: "Documents, aggregation" },
-      { name: "Firebase", note: "Auth, realtime" },
-      { name: "SQL", note: "Relational queries" },
+      "LLM Integration",
+      "RAG",
+      "Prompt Engineering",
+      "AI Assistants",
+      "AI Agents",
+      "Natural-Language Parsing",
+      "Voice Input",
     ],
   },
   {
-    label: "AI",
+    id: "engineering",
+    label: "Engineering",
     items: [
-      { name: "LLM APIs", note: "Model calls in production" },
-      { name: "RAG", note: "Retrieval over own data" },
-      { name: "Prompt Engineering", note: "Getting reliable output" },
-      { name: "AI Agents", note: "Multi-step tool use" },
+      "Full-Stack",
+      "Authentication",
+      "JWT",
+      "CRUD Systems",
+      "API Integration",
+      "Validation",
+      "Deployment",
+      "MVP Development",
     ],
   },
   {
+    id: "languages",
+    label: "Languages",
+    items: ["JavaScript", "Python", "SQL", "C"],
+  },
+  {
+    id: "tools",
     label: "Tools",
     items: [
-      { name: "Git", note: "Version control" },
-      { name: "GitHub", note: "Repos, actions" },
-      { name: "Vercel", note: "Deploys, previews" },
-      { name: "Render", note: "Server hosting" },
-      { name: "n8n", note: "Workflow automation" },
-      { name: "Claude", note: "Pair programming" },
+      "Git",
+      "GitHub",
+      "VS Code",
+      "Postman",
+      "Vercel",
+      "Render",
+      "Netlify",
+      "n8n",
+      "Claude",
+      "Notion",
     ],
   },
 ];
 
-export const EXPLORING: string[] = [
-  "Backend Architecture",
+/** the moving rail at the bottom — appetite, not credentials */
+export const INTERESTS: string[] = [
+  "AI Products",
   "AI Agents",
+  "SaaS",
+  "Developer Tools",
+  "RAG Systems",
   "Automation",
-  "API Design",
-  "Product Engineering",
+  "Building MVPs",
+  "Turning Ideas Into Products",
 ];
 
-export const TOOL_COUNT = STACK.reduce((n, g) => n + g.items.length, 0);
+export const TOTAL = STACK.reduce((n, g) => n + g.items.length, 0);

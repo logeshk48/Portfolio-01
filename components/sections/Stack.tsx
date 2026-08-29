@@ -1,37 +1,45 @@
 "use client";
 
 import { useState } from "react";
-import Reveal from "@/components/ui/Reveal";
 import SectionHead from "@/components/ui/SectionHead";
-import { EXPLORING, STACK, TOOL_COUNT, type Tool } from "@/lib/stack";
+import { markPath } from "@/lib/marks";
+import { INTERESTS, STACK, TOTAL } from "@/lib/stack";
 
 /**
- * Five rails, running continuously in alternating directions at
- * different speeds so they never march in lockstep. Each track holds
- * its list twice and travels exactly half its own width, which is why
- * the loop has no visible seam.
+ * A console, not a list.
  *
- * Hovering a rail stops it. That is the whole reason the notes work —
- * a marquee you cannot read is decoration, one you can stop is an
- * interface.
+ * The index on the left stays put; the right column re-deals on every
+ * switch. Because the item list is keyed by group, React throws the
+ * old nodes away and the CSS animation replays from scratch — which
+ * means no exit choreography to coordinate and no state machine. The
+ * transition is the whole design.
  */
 
-const tool = [
-  "font-display font-semibold uppercase",
-  "text-[clamp(26px,4vw,56px)] leading-none tracking-[-0.035em]",
-  "text-muted/40 transition-colors duration-300",
-  "hover:text-text",
+const idx = [
+  "idx group flex w-full items-center gap-4 py-[13px] text-left",
+  "border-b border-line/70 last:border-b-0",
 ].join(" ");
 
-const dot = "select-none text-line-hi/60";
+const idxNum = [
+  "font-mono text-[10px] tracking-[0.16em]",
+  "transition-colors duration-500",
+].join(" ");
 
-const chip = [
-  "label rounded-full border border-line px-[13px] py-[7px]",
-  "transition-colors duration-500 hover:border-line-hi hover:text-text",
+const idxLabel = [
+  "font-display text-[clamp(19px,1.9vw,26px)] font-semibold uppercase",
+  "tracking-[-0.02em] transition-colors duration-500",
+].join(" ");
+
+const item = [
+  "deal font-display font-semibold uppercase",
+  "text-[clamp(24px,3.6vw,52px)] leading-[1.04] tracking-[-0.035em]",
+  "text-muted/45 transition-colors duration-300 hover:text-text",
 ].join(" ");
 
 export default function Stack() {
-  const [note, setNote] = useState<string | null>(null);
+  const [active, setActive] = useState(0);
+  const [mark, setMark] = useState<string | null>(null);
+  const group = STACK[active];
 
   return (
     <section id="stack" className="overflow-hidden py-28 lg:py-36">
@@ -44,81 +52,110 @@ export default function Stack() {
               What I <span className="ice">Build</span> With
             </>
           }
-          lede="No proficiency bars. Hover a row to stop it, then hover anything to see what it is for."
+          lede="No proficiency bars. Pick a layer — the rest is what I actually reach for."
         />
       </div>
 
-      <div className="mt-16 border-t border-line/70">
-        {STACK.map((group, i) => {
-          const back = i % 2 === 1;
-          const dur = 34 + i * 7;
-
-          // the list is rendered twice; the second pass is scenery
-          const run: Tool[] = [...group.items, ...group.items];
-
-          return (
-            <div key={group.label} className="border-b border-line/70 py-7">
-              <div className="label mb-4 flex items-center gap-3 px-(--gut)">
-                {group.label}
-                <span className="text-line-hi">
-                  {String(group.items.length).padStart(2, "0")}
-                </span>
-              </div>
-
-              <div className="rail">
-                <div
-                  className="rail-track"
-                  data-dir={back ? "back" : "fwd"}
-                  style={{ "--dur": `${dur}s` } as React.CSSProperties}
+      <div className="mt-16 px-(--gut)">
+        <div className="grid grid-cols-[minmax(200px,270px)_1fr] gap-14 border-t border-line/70 pt-10 max-lg:grid-cols-1 max-lg:gap-8">
+          {/* ── index ───────────────────────────────── */}
+          <div className="lg:sticky lg:top-24 lg:self-start">
+            {STACK.map((g, i) => {
+              const on = i === active;
+              return (
+                <button
+                  key={g.id}
+                  className={idx}
+                  data-on={on}
+                  onMouseEnter={() => {
+                    setActive(i);
+                    setMark(null);
+                  }}
+                  onFocus={() => setActive(i)}
+                  onClick={() => setActive(i)}
+                  aria-pressed={on}
                 >
-                  {run.map((item, k) => (
-                    <span
-                      key={`${item.name}-${k}`}
-                      className="flex items-baseline gap-10"
-                      onMouseEnter={() =>
-                        setNote(`${item.name} — ${item.note}`)
-                      }
-                      onMouseLeave={() => setNote(null)}
-                    >
-                      <span className={tool}>{item.name}</span>
-                      <span className={dot} aria-hidden>
-                        &#9679;
-                      </span>
-                    </span>
-                  ))}
-                </div>
-              </div>
+                  <span
+                    className={`${idxNum} ${on ? "text-ice" : "text-line-hi"}`}
+                  >
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+
+                  <span
+                    className={`${idxLabel} ${
+                      on ? "text-text" : "text-muted/50"
+                    }`}
+                  >
+                    {g.label}
+                  </span>
+
+                  <span className="ml-auto h-px w-8 bg-line">
+                    <span className="idx-bar block h-px w-full bg-ice" />
+                  </span>
+                </button>
+              );
+            })}
+
+            <div className="label mt-7 flex items-center gap-3">
+              <span className="text-text">{TOTAL}</span>
+              things in rotation
             </div>
-          );
-        })}
+          </div>
+
+          {/* ── the deal ────────────────────────────── */}
+          <div className="relative min-h-[46vh]">
+            {/* the ghost sits behind everything and never moves the
+                layout, so items without a mark cost nothing */}
+            <svg
+              className="ghost pointer-events-none absolute right-0 top-1/2 -translate-y-1/2"
+              viewBox="0 0 24 24"
+              width="440"
+              height="440"
+              data-on={mark ? "true" : "false"}
+              aria-hidden
+            >
+              {mark && <path d={mark} fill="currentColor" />}
+            </svg>
+
+            <div
+              key={group.id}
+              className="relative flex flex-wrap items-baseline gap-x-9 gap-y-3"
+            >
+              {group.items.map((name, i) => (
+                <span
+                  key={name}
+                  className={item}
+                  style={{ "--i": i } as React.CSSProperties}
+                  onMouseEnter={() => setMark(markPath(name))}
+                  onMouseLeave={() => setMark(null)}
+                >
+                  {name}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div className="px-(--gut)">
-        {/* one fixed slot for the note, so nothing reflows on hover */}
-        <div className="mt-8 flex h-5 items-center">
-          <span
-            className={[
-              "label transition-opacity duration-300",
-              note ? "text-text opacity-100" : "opacity-0",
-            ].join(" ")}
+      {/* ── interests: appetite, not credentials ────── */}
+      <div className="mt-20 border-y border-line/70 py-6">
+        <div className="rail">
+          <div
+            className="rail-track"
+            style={{ "--dur": "46s" } as React.CSSProperties}
           >
-            {note ?? "\u00A0"}
-          </span>
-        </div>
-
-        <Reveal delay={120}>
-          <div className="mt-10 flex flex-wrap items-center gap-x-3 gap-y-3">
-            <span className="label mr-2 text-ice">Currently learning</span>
-            {EXPLORING.map((item) => (
-              <span key={item} className={chip}>
-                {item}
+            {[...INTERESTS, ...INTERESTS].map((x, k) => (
+              <span key={`${x}-${k}`} className="flex items-center gap-9">
+                <span className="font-display text-[clamp(18px,2.1vw,30px)] font-medium uppercase tracking-[-0.02em] text-muted/50">
+                  {x}
+                </span>
+                <span className="text-ice/50" aria-hidden>
+                  &#9679;
+                </span>
               </span>
             ))}
-            <span className="label ml-auto max-sm:ml-0">
-              {TOOL_COUNT} tools in rotation
-            </span>
           </div>
-        </Reveal>
+        </div>
       </div>
     </section>
   );

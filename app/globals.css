@@ -235,6 +235,91 @@ html.lenis body { height: auto; }
 @media (prefers-reduced-motion: reduce) {
   .rail-track { animation: none; }
 }
+/* ── stagger: the transition IS the design ──────
+   Every item carries its own delay, so switching group reads as a
+   deck being dealt rather than a block swapping. Remounting the list
+   replays it — no state machine, no exit animation to coordinate. */
+.deal {
+  opacity: 0;
+  animation: dealIn 0.7s var(--ease-slow) forwards;
+  animation-delay: calc(var(--i) * 45ms);
+}
+@keyframes dealIn {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 26px, 0) skewY(2.5deg);
+    filter: blur(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: blur(0);
+  }
+}
+
+/* the index: a bar that grows from nothing when a group is armed */
+.idx-bar {
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.55s var(--ease-slow);
+}
+.idx[data-on="true"] .idx-bar {
+  transform: scaleX(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .deal { opacity: 1; animation: none; }
+}
+/* ── stagger: the transition IS the design ──────
+   Every item carries its own delay, so switching group reads as a
+   deck being dealt rather than a block swapping. Remounting the list
+   replays it — no state machine, no exit animation to coordinate. */
+.deal {
+  opacity: 0;
+  animation: dealIn 0.7s var(--ease-slow) forwards;
+  animation-delay: calc(var(--i) * 45ms);
+}
+@keyframes dealIn {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 26px, 0) skewY(2.5deg);
+    filter: blur(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: blur(0);
+  }
+}
+
+/* the ghost mark: huge, faint, monochrome. It never enters the
+   palette and it never occupies layout — it only ever answers. */
+.ghost {
+  color: #f2f1fa;
+  opacity: 0;
+  transform: translateY(-50%) scale(0.88);
+  transition:
+    opacity 0.7s var(--ease-slow),
+    transform 0.9s var(--ease-slow);
+}
+.ghost[data-on="true"] {
+  opacity: 0.055;
+  transform: translateY(-50%) scale(1);
+}
+
+/* the index: a bar that grows from nothing when a group is armed */
+.idx-bar {
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.55s var(--ease-slow);
+}
+.idx[data-on="true"] .idx-bar {
+  transform: scaleX(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .deal { opacity: 1; animation: none; }
+}
 
 /* ── scroll reveal ────────────────────────────── */
 .reveal {
