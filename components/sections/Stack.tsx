@@ -5,12 +5,14 @@ import Reveal from "@/components/ui/Reveal";
 import { INTERESTS, STACK } from "@/lib/stack";
 
 /**
- * Calm structure, careful execution.
+ * Six cards. Hovering one lifts it toward the reader on a real
+ * perspective — translateZ, not a scale — while the other five step
+ * back to 40%. Attention is created by taking it away from
+ * everything else.
  *
- * Everything here is a response rather than an ornament. The cursor
- * carries a soft light across the panel. Hovering a group lifts it,
- * blooms its mark, reveals its note, and steps the other five back —
- * attention is created by taking it away from everything else.
+ * The surface, border and shadow all live on a pseudo-element, so a
+ * card gains a background without its content ever inheriting one,
+ * and the whole box composites as a single layer.
  *
  * The spotlight writes two custom properties on a ref, never through
  * state, so moving the mouse across this section never re-renders.
@@ -21,18 +23,16 @@ const head = [
   "uppercase tracking-[-0.03em] leading-none",
 ].join(" ");
 
-const col = [
-  "col relative flex flex-col items-center px-8 pb-4 text-center",
-  "max-md:px-0",
+const card = [
+  "card col flex flex-col items-center",
+  "px-7 pb-9 pt-8 text-center",
 ].join(" ");
 
-const colTitle = [
+const cardTitle = [
   "mt-6 font-display text-[19px] font-semibold uppercase",
   "tracking-[0.03em] text-text",
 ].join(" ");
 
-// skills sit in the display face at a readable size with open
-// tracking — the old light sans read as fine print
 const skill = [
   "tick block py-[7px] font-display text-[15.5px] font-medium",
   "tracking-[0.015em] text-muted hover:text-text",
@@ -88,26 +88,16 @@ export default function Stack() {
           </p>
         </Reveal>
 
-        {/* ── six groups, three across ─────────────── */}
-        <div className="cols mx-auto mt-24 grid max-w-[1180px] grid-cols-3 gap-y-20 max-lg:grid-cols-2 max-lg:gap-y-16 max-sm:grid-cols-1 max-sm:gap-y-14">
+        {/* ── six cards, three across ──────────────── */}
+        <div className="cols mx-auto mt-24 grid max-w-[1180px] grid-cols-3 gap-5 max-lg:grid-cols-2 max-sm:grid-cols-1">
           {STACK.map((group, i) => (
-            <Reveal key={group.label} delay={140 + i * 90} className={col}>
-              {i % 3 !== 0 && (
-                <span className="divider max-lg:hidden" aria-hidden />
-              )}
-              {i % 2 !== 0 && (
-                <span
-                  className="divider hidden max-lg:block max-sm:hidden"
-                  aria-hidden
-                />
-              )}
-
-              <span className="label mb-5 text-line-hi">
+            <Reveal key={group.label} delay={140 + i * 90} className={card}>
+              <span className="label text-line-hi">
                 {String(i + 1).padStart(2, "0")}
               </span>
 
               {/* orbit, halo and mark share one box so they cannot drift */}
-              <div className="relative flex size-[86px] items-center justify-center">
+              <div className="relative mt-5 flex size-[84px] items-center justify-center">
                 <span className="halo" aria-hidden />
 
                 <svg
@@ -130,8 +120,8 @@ export default function Stack() {
                 <svg
                   className="ink relative text-ice"
                   viewBox="0 0 24 24"
-                  width="34"
-                  height="34"
+                  width="33"
+                  height="33"
                   fill="none"
                   stroke="currentColor"
                   strokeWidth="1.2"
@@ -143,7 +133,7 @@ export default function Stack() {
                 </svg>
               </div>
 
-              <h3 className={colTitle}>{group.label}</h3>
+              <h3 className={cardTitle}>{group.label}</h3>
 
               <p className="note label max-w-[24ch] normal-case tracking-[0.05em]">
                 {group.note}

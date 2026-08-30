@@ -371,40 +371,104 @@ html.lenis body { height: auto; }
   transform: scale(1);
 }
 
-/* focus: the column under the cursor holds, the rest step back.
-   Attention is created by taking it away from everything else. */
-.cols .col {
-  transition:
-    opacity 0.6s var(--ease-slow),
-    transform 0.6s var(--ease-slow);
-}
-.cols:hover .col {
-  opacity: 0.42;
-}
-.cols .col:hover {
-  opacity: 1;
-  transform: translateY(-6px);
+/* ── the card ─────────────────────────────────
+   Each group is a panel that lifts toward the reader on hover. The
+   surface, the border and the shadow are all on a pseudo-element so
+   the card can gain a background without the content ever inheriting
+   one, and so the whole box can be composited as a single layer.
+
+   Perspective lives on the grid, which is what lets a card come
+   forward into real depth rather than just scaling. */
+.cols {
+  perspective: 1400px;
 }
 
-/* the divider fades out at both ends rather than stopping dead */
-.divider {
+.card {
+  position: relative;
+  border-radius: 20px;
+  transform-style: preserve-3d;
+  transition:
+    transform 0.75s var(--ease-slow),
+    opacity 0.6s var(--ease-slow);
+  will-change: transform;
+}
+
+/* the surface, drawn behind everything */
+.card::before {
+  content: "";
   position: absolute;
-  left: 0;
-  top: 6%;
-  bottom: 6%;
-  width: 1px;
+  inset: 0;
+  border-radius: inherit;
+  border: 1px solid transparent;
+  background:
+    linear-gradient(
+      to bottom,
+      rgba(24, 20, 54, 0.75),
+      rgba(14, 12, 34, 0.55)
+    );
+  box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
+  opacity: 0;
+  transform: scale(0.97);
+  transition:
+    opacity 0.65s var(--ease-slow),
+    transform 0.75s var(--ease-slow),
+    border-color 0.65s var(--ease-slow),
+    box-shadow 0.75s var(--ease-slow);
+}
+
+/* a hairline of cyan along the top edge only — a light source,
+   not an outline */
+.card::after {
+  content: "";
+  position: absolute;
+  inset-inline: 22%;
+  top: 0;
+  height: 1px;
+  border-radius: 1px;
   background: linear-gradient(
-    to bottom,
+    to right,
     transparent,
-    #221e46 18%,
-    #2f2a5c 50%,
-    #221e46 82%,
+    rgba(99, 232, 255, 0.75),
     transparent
   );
+  opacity: 0;
+  transform: scaleX(0.3);
+  transition:
+    opacity 0.6s var(--ease-slow),
+    transform 0.8s var(--ease-slow);
+}
+
+/* everything inside sits above the surface */
+.card > * {
+  position: relative;
+  z-index: 1;
+}
+
+.cols:hover .card {
+  opacity: 0.4;
+}
+
+.cols .card:hover {
+  opacity: 1;
+  transform: translateY(-12px) translateZ(46px);
+}
+
+.cols .card:hover::before {
+  opacity: 1;
+  transform: scale(1);
+  border-color: rgba(99, 232, 255, 0.16);
+  box-shadow:
+    0 34px 60px -28px rgba(0, 0, 0, 0.85),
+    0 0 90px -30px rgba(99, 232, 255, 0.35);
+}
+
+.cols .card:hover::after {
+  opacity: 1;
+  transform: scaleX(1);
 }
 
 /* the note under each title: held at zero height until hover, so it
-   can never push the columns out of alignment */
+   can never push the cards out of alignment */
 .note {
   max-height: 0;
   opacity: 0;
@@ -420,7 +484,7 @@ html.lenis body { height: auto; }
   margin-top: 0.5rem;
 }
 
-/* items arrive one after another inside their own column */
+/* items arrive one after another inside their own card */
 .tick {
   opacity: 0;
   transform: translateY(10px);
