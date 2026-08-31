@@ -83,8 +83,7 @@ export default function Stack() {
 
         <Reveal delay={90}>
           <p className="mx-auto mt-7 max-w-[46ch] text-center text-[15.5px] font-light leading-[1.8] text-muted">
-            Six layers I work across, from the pixel to the prompt. Hover
-            anything to see where it sits.
+            Six layers, one person. This is what I reach for.
           </p>
         </Reveal>
 

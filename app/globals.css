@@ -223,9 +223,61 @@ html.lenis body { height: auto; }
   to   { transform: translate3d(-50%, 0, 0); }
 }
 
-/* ── the wish rail ────────────────────────────
-   Same mechanics, but hovering one item claims the colour and
-   everything else steps back. */
+/* ── the wish band ────────────────────────────
+   The strip gets its own surface so it reads as a ticker rather
+   than a gap between two borders. Darker at the edges, lifted in
+   the middle, with a slow sheen crossing it — the band looks lit
+   from behind rather than filled in. */
+.wish-band {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+.wish-band::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(
+      to right,
+      transparent 0%,
+      rgba(124, 92, 255, 0.09) 26%,
+      rgba(99, 232, 255, 0.09) 68%,
+      transparent 100%
+    ),
+    linear-gradient(
+      to bottom,
+      rgba(10, 10, 24, 0) 0%,
+      rgba(23, 19, 56, 0.9) 45%,
+      rgba(23, 19, 56, 0.9) 60%,
+      rgba(10, 10, 24, 0) 100%
+    );
+}
+
+/* the sheen: one soft band travelling across, slow enough to read
+   as light rather than as an animation */
+.wish-band::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(
+    100deg,
+    transparent 38%,
+    rgba(99, 232, 255, 0.10) 50%,
+    transparent 62%
+  );
+  background-size: 220% 100%;
+  animation: wishSheen 11s ease-in-out infinite;
+}
+@keyframes wishSheen {
+  from { background-position: 160% 0; }
+  to   { background-position: -60% 0; }
+}
+
+/* Same marquee mechanics, but hovering one item claims the colour
+   and everything else steps back. */
 .wish {
   transition:
     color 0.35s var(--ease-slow),
@@ -374,8 +426,8 @@ html.lenis body { height: auto; }
 /* ── the card ─────────────────────────────────
    Each group is a panel that lifts toward the reader on hover. The
    surface, the border and the shadow are all on a pseudo-element so
-   the card can gain a background without the content ever inheriting
-   one, and so the whole box can be composited as a single layer.
+   the card can carry a background without the content ever
+   inheriting one, and so the whole box composites as one layer.
 
    Perspective lives on the grid, which is what lets a card come
    forward into real depth rather than just scaling. */
@@ -393,25 +445,26 @@ html.lenis body { height: auto; }
   will-change: transform;
 }
 
-/* the surface, drawn behind everything */
+/* the surface, drawn behind everything. Present at rest — quiet
+   enough that six of them read as a set rather than six competing
+   panels — then lit and lifted on hover. */
 .card::before {
   content: "";
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  border: 1px solid transparent;
+  border: 1px solid rgba(75, 71, 128, 0.28);
   background:
     linear-gradient(
       to bottom,
-      rgba(24, 20, 54, 0.75),
-      rgba(14, 12, 34, 0.55)
+      rgba(22, 18, 50, 0.55),
+      rgba(13, 11, 32, 0.35)
     );
-  box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
-  opacity: 0;
-  transform: scale(0.97);
+  box-shadow: 0 18px 40px -34px rgba(0, 0, 0, 0.9);
+  opacity: 1;
+  transform: scale(1);
   transition:
-    opacity 0.65s var(--ease-slow),
-    transform 0.75s var(--ease-slow),
+    background 0.65s var(--ease-slow),
     border-color 0.65s var(--ease-slow),
     box-shadow 0.75s var(--ease-slow);
 }
@@ -445,7 +498,7 @@ html.lenis body { height: auto; }
 }
 
 .cols:hover .card {
-  opacity: 0.4;
+  opacity: 0.45;
 }
 
 .cols .card:hover {
@@ -454,9 +507,13 @@ html.lenis body { height: auto; }
 }
 
 .cols .card:hover::before {
-  opacity: 1;
-  transform: scale(1);
-  border-color: rgba(99, 232, 255, 0.16);
+  border-color: rgba(99, 232, 255, 0.30);
+  background:
+    linear-gradient(
+      to bottom,
+      rgba(30, 25, 68, 0.85),
+      rgba(16, 13, 40, 0.65)
+    );
   box-shadow:
     0 34px 60px -28px rgba(0, 0, 0, 0.85),
     0 0 90px -30px rgba(99, 232, 255, 0.35);
@@ -599,5 +656,6 @@ html.lenis body { height: auto; }
   .rail-track { animation: none; }
   .atmos::before,
   .atmos::after { animation: none; }
+  .wish-band::after { animation: none; }
   .cursor-root { display: none; }
 }
