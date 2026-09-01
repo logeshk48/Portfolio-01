@@ -254,6 +254,30 @@ html.lenis body { height: auto; }
       rgba(10, 10, 24, 0) 100%
     );
 }
+/* the wolf: 2600px of image inside a viewport-width frame, so there
+   is real slack to travel through. It drifts against the marquee —
+   two layers moving opposite ways at different speeds is what sells
+   depth. Masked top and bottom so it dissolves into the page instead
+   of ending on a hard edge. */
+.wolf {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image: url("/img/wolf-band.jpg");
+  background-size: 2600px 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.85;
+  transform: translate3d(calc(var(--p, 0) * -70px), 0, 0);
+  will-change: transform;
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    #000 22%,
+    #000 78%,
+    transparent 100%
+  );
+}
 
 /* the sheen: one soft band travelling across, slow enough to read
    as light rather than as an animation */
@@ -575,6 +599,48 @@ html.lenis body { height: auto; }
 }
 .reveal.in .mask-line > span {
   transform: none;
+}
+/* ── work rows ────────────────────────────────
+   The frame lifts a little and a sheen crosses it when the row is
+   hovered. The row is the hover target, not the image — reading the
+   text should light the screenshot too, because they are one thing. */
+.work-row + .work-row {
+  border-top: 1px solid rgba(34, 30, 70, 0.7);
+}
+
+.shot {
+  background: #07060f;
+  box-shadow: 0 30px 60px -40px rgba(0, 0, 0, 0.9);
+  transition:
+    transform 0.8s var(--ease-slow),
+    box-shadow 0.8s var(--ease-slow),
+    border-color 0.6s var(--ease-slow);
+}
+.work-row:hover .shot {
+  transform: translateY(-8px);
+  border-color: rgba(99, 232, 255, 0.22);
+  box-shadow:
+    0 44px 80px -44px rgba(0, 0, 0, 0.95),
+    0 0 90px -40px rgba(99, 232, 255, 0.3);
+}
+
+.shot-sheen {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  background: linear-gradient(
+    104deg,
+    transparent 42%,
+    rgba(255, 255, 255, 0.07) 50%,
+    transparent 58%
+  );
+  background-size: 260% 100%;
+  background-position: 150% 0;
+  transition: background-position 1.5s var(--ease-slow);
+}
+.work-row:hover .shot-sheen {
+  background-position: -60% 0;
 }
 
 /* ── scroll reveal ────────────────────────────── */

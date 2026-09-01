@@ -2,13 +2,13 @@
 
 import { useRef, useState } from "react";
 import Reveal from "@/components/ui/Reveal";
-import { INTERESTS, STACK } from "@/lib/stack";
+import WishBand from "./WishBand";
+import { STACK } from "@/lib/stack";
 
 /**
  * Six cards. Hovering one lifts it toward the reader on a real
  * perspective — translateZ, not a scale — while the other five step
- * back to 40%. Attention is created by taking it away from
- * everything else.
+ * back. Attention is created by taking it away from everything else.
  *
  * The surface, border and shadow all live on a pseudo-element, so a
  * card gains a background without its content ever inheriting one,
@@ -36,11 +36,6 @@ const cardTitle = [
 const skill = [
   "tick block py-[7px] font-display text-[15.5px] font-medium",
   "tracking-[0.015em] text-muted hover:text-text",
-].join(" ");
-
-const wish = [
-  "wish font-display text-[clamp(20px,2.4vw,34px)] font-semibold",
-  "uppercase tracking-[-0.02em] text-muted/55",
 ].join(" ");
 
 export default function Stack() {
@@ -83,7 +78,8 @@ export default function Stack() {
 
         <Reveal delay={90}>
           <p className="mx-auto mt-7 max-w-[46ch] text-center text-[15.5px] font-light leading-[1.8] text-muted">
-            Six layers, one person. This is what I reach for.
+            Everything I have shipped with. From the first line of a
+            component to a model answering in production.
           </p>
         </Reveal>
 
@@ -156,28 +152,7 @@ export default function Stack() {
         </div>
       </div>
 
-      {/* ── what I want to build ─────────────────── */}
-      <div className="mt-28 border-y border-line/70 py-7">
-        <p className="label mb-6 px-(--gut) text-center">
-          What I want to build
-        </p>
-
-        <div className="rail wish-rail">
-          <div
-            className="rail-track"
-            style={{ "--dur": "52s" } as React.CSSProperties}
-          >
-            {[...INTERESTS, ...INTERESTS].map((x, k) => (
-              <span key={`${x}-${k}`} className="flex items-center gap-10">
-                <span className={wish}>{x}</span>
-                <span className="text-line-hi" aria-hidden>
-                  &#9679;
-                </span>
-              </span>
-            ))}
-          </div>
-        </div>
-      </div>
+      <WishBand />
     </section>
   );
 }
