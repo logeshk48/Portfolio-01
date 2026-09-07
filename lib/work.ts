@@ -5,9 +5,8 @@
  * rather than a dead one.
  *
  * `tint` is each project's own accent, taken from its real design
- * system. It colours the placeholder frame until a screenshot exists,
- * so the four frames read as four different products rather than four
- * empty boxes.
+ * system. It colours the frame behind the app icon, so the four rows
+ * read as four different products rather than four empty boxes.
  */
 
 export interface Project {
@@ -24,6 +23,11 @@ export interface Project {
   tint: [string, string];
   links?: { live?: string; repo?: string };
   shot?: string;
+}
+
+/** icons live at /img/work/<slug>.png — derived, never hand-wired */
+export function iconPath(slug: string): string {
+  return `/img/work/${slug}.png`;
 }
 
 export const WORK: Project[] = [

@@ -62,9 +62,9 @@ html.lenis body { height: auto; }
 .lenis.lenis-stopped { overflow: hidden; }
 
 /* ── uppercase system ──────────────────────────
-   Caps only ever appear tracked out. Uppercase at normal
-   tracking reads cramped and cheap; at 0.14em it reads
-   engineered. Three sizes, nothing else. */
+   Caps only ever appear tracked out. Uppercase at normal tracking
+   reads cramped and cheap; at 0.14em it reads engineered. Three
+   sizes, nothing else. */
 .label {
   font-family: var(--font-mono);
   font-size: 10px;
@@ -86,8 +86,8 @@ html.lenis body { height: auto; }
   font-weight: 500;
 }
 
-/* the accent is pulled from the footage: it is the exact cyan the
-   monitors throw. Used one word at a time. */
+/* the accent is the exact cyan the monitors throw in the footage.
+   Used one word at a time. */
 .ice {
   color: #63e8ff;
 }
@@ -101,8 +101,9 @@ html.lenis body { height: auto; }
   50% { opacity: 0.35; }
 }
 
-/* pill buttons: a fill that wipes up from the bottom, and an arrow
-   that leaves before the label does */
+/* ── pill buttons ─────────────────────────────
+   A fill that wipes up from the bottom, and an arrow that leaves
+   before the label does. */
 .pill-btn {
   position: relative;
   display: inline-flex;
@@ -148,7 +149,10 @@ html.lenis body { height: auto; }
   border-color: #63e8ff;
 }
 
-/* nav links: the label rolls up and a duplicate rolls in behind it. */
+/* ── nav links ────────────────────────────────
+   The label rolls up and a duplicate rolls in behind it. Two stacked
+   copies in a clipped box — smoother than animating opacity, and it
+   reads as mechanical rather than fading. */
 .nav-link {
   position: relative;
   display: block;
@@ -177,7 +181,7 @@ html.lenis body { height: auto; }
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='4'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
-/* ── entrance: one slow orchestrated reveal ─────── */
+/* ── entrance: one slow orchestrated reveal ───── */
 .rise {
   opacity: 0;
   transform: translateY(18px);
@@ -190,8 +194,9 @@ html.lenis body { height: auto; }
 
 /* ── marquee ──────────────────────────────────
    The track holds its list twice and slides exactly half its width,
-   so on completion it is pixel-identical to where it began — the
-   loop has no seam because there is nothing to seam. */
+   so on completion it is pixel-identical to where it began — the loop
+   has no seam because there is nothing to seam. Masked at both edges
+   so names dissolve into the margin instead of being guillotined. */
 .rail {
   position: relative;
   overflow: hidden;
@@ -224,10 +229,9 @@ html.lenis body { height: auto; }
 }
 
 /* ── the wish band ────────────────────────────
-   The strip gets its own surface so it reads as a ticker rather
-   than a gap between two borders. Darker at the edges, lifted in
-   the middle, with a slow sheen crossing it — the band looks lit
-   from behind rather than filled in. */
+   The strip gets its own surface so it reads as a ticker rather than
+   a gap between two borders. Darker at the edges, lifted in the
+   middle — lit from behind rather than filled in. */
 .wish-band {
   position: relative;
   isolation: isolate;
@@ -254,11 +258,11 @@ html.lenis body { height: auto; }
       rgba(10, 10, 24, 0) 100%
     );
 }
+
 /* the wolf: 2600px of image inside a viewport-width frame, so there
    is real slack to travel through. It drifts against the marquee —
    two layers moving opposite ways at different speeds is what sells
-   depth. Masked top and bottom so it dissolves into the page instead
-   of ending on a hard edge. */
+   depth. Masked top and bottom so it dissolves into the page. */
 .wolf {
   position: absolute;
   inset: 0;
@@ -279,8 +283,8 @@ html.lenis body { height: auto; }
   );
 }
 
-/* the sheen: one soft band travelling across, slow enough to read
-   as light rather than as an animation */
+/* the sheen: one soft band travelling across, slow enough to read as
+   light rather than as an animation */
 .wish-band::after {
   content: "";
   position: absolute;
@@ -300,8 +304,7 @@ html.lenis body { height: auto; }
   to   { background-position: -60% 0; }
 }
 
-/* Same marquee mechanics, but hovering one item claims the colour
-   and everything else steps back. */
+/* hovering one item claims the colour, everything else steps back */
 .wish {
   transition:
     color 0.35s var(--ease-slow),
@@ -318,8 +321,8 @@ html.lenis body { height: auto; }
 /* ── section atmosphere ───────────────────────
    Concentric rings rather than a square grid, so the background
    echoes the ring around every mark instead of fighting it. Masked
-   to nothing at the edges — the moment you can see where a
-   background stops, it reads as a box rather than as depth. */
+   to nothing at the edges — the moment you can see where a background
+   stops, it reads as a box rather than as depth. */
 .atmos {
   position: absolute;
   inset: 0;
@@ -394,8 +397,8 @@ html.lenis body { height: auto; }
 }
 
 /* ── icons that draw themselves ───────────────
-   pathLength="1" normalises every path to a single unit, so one
-   dash rule works for six completely different drawings. */
+   pathLength="1" normalises every path to a single unit, so one dash
+   rule works for six completely different drawings. */
 .ink path {
   stroke-dasharray: 1;
   stroke-dashoffset: 1;
@@ -447,11 +450,11 @@ html.lenis body { height: auto; }
   transform: scale(1);
 }
 
-/* ── the card ─────────────────────────────────
+/* ── the stack card ───────────────────────────
    Each group is a panel that lifts toward the reader on hover. The
-   surface, the border and the shadow are all on a pseudo-element so
-   the card can carry a background without the content ever
-   inheriting one, and so the whole box composites as one layer.
+   surface, border and shadow all live on a pseudo-element so the card
+   carries a background without its content inheriting one, and the
+   whole box composites as one layer.
 
    Perspective lives on the grid, which is what lets a card come
    forward into real depth rather than just scaling. */
@@ -469,9 +472,8 @@ html.lenis body { height: auto; }
   will-change: transform;
 }
 
-/* the surface, drawn behind everything. Present at rest — quiet
-   enough that six of them read as a set rather than six competing
-   panels — then lit and lifted on hover. */
+/* present at rest — quiet enough that six read as a set rather than
+   six competing panels — then lit on hover */
 .card::before {
   content: "";
   position: absolute;
@@ -493,8 +495,8 @@ html.lenis body { height: auto; }
     box-shadow 0.75s var(--ease-slow);
 }
 
-/* a hairline of cyan along the top edge only — a light source,
-   not an outline */
+/* a hairline of cyan along the top edge only — a light source, not
+   an outline */
 .card::after {
   content: "";
   position: absolute;
@@ -515,7 +517,6 @@ html.lenis body { height: auto; }
     transform 0.8s var(--ease-slow);
 }
 
-/* everything inside sits above the surface */
 .card > * {
   position: relative;
   z-index: 1;
@@ -600,10 +601,11 @@ html.lenis body { height: auto; }
 .reveal.in .mask-line > span {
   transform: none;
 }
+
 /* ── work rows ────────────────────────────────
-   The frame lifts a little and a sheen crosses it when the row is
-   hovered. The row is the hover target, not the image — reading the
-   text should light the screenshot too, because they are one thing. */
+   The frame lifts and a sheen crosses it when the row is hovered. The
+   row is the hover target, not the image — reading the text should
+   light the screenshot too, because they are one thing. */
 .work-row + .work-row {
   border-top: 1px solid rgba(34, 30, 70, 0.7);
 }
@@ -624,6 +626,17 @@ html.lenis body { height: auto; }
     0 0 90px -40px rgba(99, 232, 255, 0.3);
 }
 
+/* the icon lifts a touch further than the frame it sits on, which is
+   what makes it read as sitting on the glass rather than printed
+   into it */
+.app-icon {
+  box-shadow: 0 10px 24px -12px rgba(0, 0, 0, 0.9);
+  transition: transform 0.8s var(--ease-slow);
+}
+.work-row:hover .app-icon {
+  transform: translateY(-3px) scale(1.04);
+}
+
 .shot-sheen {
   position: absolute;
   inset: 0;
@@ -642,6 +655,128 @@ html.lenis body { height: auto; }
 .work-row:hover .shot-sheen {
   background-position: -60% 0;
 }
+/* ── the morph ────────────────────────────────
+   A circuit trace becoming a code bracket, driven by scroll.
+   
+   Both marks share one rotation and one scale — only opacity and the
+   stroke reveal cross over. That shared motion is what makes it read
+   as a single object changing rather than two images swapping, and it
+   costs one transform on one parent instead of two on two children.
+   
+   The stroke draw runs backwards on the way out and forwards on the
+   way in, so the circuit un-draws itself as the code writes itself. */
+.morph {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 0;
+  width: min(58vw, 720px);
+  pointer-events: none;
+  transform:
+    translate(-50%, -50%)
+    rotate(calc(var(--p, 0) * 90deg))
+    scale(calc(0.94 + var(--p, 0) * 0.12));
+  transition: transform 0.2s linear;
+}
+.morph svg {
+  width: 100%;
+  height: auto;
+  stroke: #63e8ff;
+}
+
+/* circuit: full at the top of the section, gone by halfway */
+.morph-a {
+  opacity: calc((1 - var(--p, 0) * 2) * 0.16);
+  stroke-dasharray: 1;
+  stroke-dashoffset: calc(var(--p, 0) * 1.6);
+}
+
+/* code: absent until halfway, full by the bottom */
+.morph-b {
+  opacity: calc((var(--p, 0) * 2 - 1) * 0.16);
+  stroke-dasharray: 1;
+  stroke-dashoffset: calc(1 - var(--p, 0));
+}
+
+@media (max-width: 900px) {
+  .morph { width: 86vw; opacity: 0.7; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .morph { transform: translate(-50%, -50%) rotate(90deg); }
+  .morph-a { opacity: 0; }
+  .morph-b { opacity: 0.16; stroke-dashoffset: 0; }
+}
+
+/* ── the spine ────────────────────────────────
+   One line that draws downward as the section enters, with nodes that
+   pop after it has passed them. Scaling a single element beats
+   animating four separate heights, and the nodes only need a delay
+   rather than any knowledge of where the line has reached. */
+.spine-line {
+  position: absolute;
+  left: 0;
+  top: 6px;
+  bottom: 6px;
+  width: 1px;
+  background: linear-gradient(
+    to bottom,
+    rgba(99, 232, 255, 0.5),
+    rgba(75, 71, 128, 0.5) 55%,
+    transparent
+  );
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: transform 1.6s var(--ease-slow);
+}
+.spine.in .spine-line {
+  transform: scaleY(1);
+}
+
+.spine-node {
+  position: absolute;
+  left: -40px;
+  top: 4px;
+  width: 9px;
+  height: 9px;
+  margin-left: -4px;
+  border-radius: 50%;
+  border: 1px solid rgba(99, 232, 255, 0.55);
+  background: #0a0a18;
+  opacity: 0;
+  transform: scale(0.4);
+  transition:
+    opacity 0.5s var(--ease-slow),
+    transform 0.6s var(--ease-slow);
+  transition-delay: calc(300ms + var(--i) * 320ms);
+}
+.spine.in .spine-node {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* ── capability rows ──────────────────────────
+   The detail list is held at zero height and opens on hover, so five
+   capabilities read as five lines until you want more from one. Grid
+   rows animate from 0fr to 1fr — the only way to transition to
+   content height without hard-coding a max-height that will
+   eventually be wrong. */
+.cap-detail {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition:
+    grid-template-rows 0.7s var(--ease-slow),
+    opacity 0.5s var(--ease-slow);
+}
+.cap-detail > * {
+  overflow: hidden;
+  min-height: 0;
+}
+.cap:hover .cap-detail {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
 
 /* ── scroll reveal ────────────────────────────── */
 .reveal {
@@ -657,57 +792,63 @@ html.lenis body { height: auto; }
   transform: none;
 }
 
-/* ── probe cursor ─────────────────────────────── */
-@media (hover: hover) and (pointer: fine) {
-  html.has-cursor,
-  html.has-cursor * { cursor: none !important; }
-}
-
-.cursor-root {
+/* ── pointer glow ─────────────────────────────
+   The native cursor stays visible. This is light following it, not a
+   replacement for it — two layers at different lags so fast movement
+   smears them apart and settling pulls them together. */
+.glow {
   position: fixed;
   top: 0;
   left: 0;
-  z-index: 9999;
+  z-index: 9998;
   pointer-events: none;
-  mix-blend-mode: difference;
-  will-change: transform;
-}
-.cursor-ring {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 30px;
-  height: 30px;
-  margin: -15px 0 0 -15px;
-  border: 1px solid #f2f1fa;
   border-radius: 50%;
+  opacity: 0;
   transition:
+    opacity 0.6s var(--ease-slow),
     width 0.5s var(--ease-slow),
     height 0.5s var(--ease-slow),
-    margin 0.5s var(--ease-slow),
-    border-radius 0.5s var(--ease-slow),
-    opacity 0.4s ease;
+    margin 0.5s var(--ease-slow);
+  will-change: transform;
 }
-.cursor-dot {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 3px;
-  height: 3px;
-  margin: -1.5px 0 0 -1.5px;
-  background: #f2f1fa;
-  border-radius: 50%;
-  transition: opacity 0.4s ease;
+.glow[data-on="true"] {
+  opacity: 1;
 }
-.cursor-root[data-state="link"] .cursor-ring {
-  width: 60px; height: 60px; margin: -30px 0 0 -30px;
+
+.glow-near {
+  width: 26px;
+  height: 26px;
+  margin: -13px 0 0 -13px;
+  background: radial-gradient(
+    circle,
+    rgba(99, 232, 255, 0.30) 0%,
+    transparent 68%
+  );
 }
-.cursor-root[data-state="link"] .cursor-dot { opacity: 0; }
-.cursor-root[data-state="text"] .cursor-ring {
-  width: 2px; height: 28px; margin: -14px 0 0 -1px; border-radius: 0;
+.glow-far {
+  width: 190px;
+  height: 190px;
+  margin: -95px 0 0 -95px;
+  background: radial-gradient(
+    circle,
+    rgba(124, 92, 255, 0.10) 0%,
+    rgba(99, 232, 255, 0.05) 40%,
+    transparent 70%
+  );
+  filter: blur(6px);
 }
-.cursor-root[data-state="text"] .cursor-dot { opacity: 0; }
-.cursor-root[data-hidden="true"] { opacity: 0; }
+
+/* over anything clickable, both layers open up */
+.glow-near[data-hot="true"] {
+  width: 44px;
+  height: 44px;
+  margin: -22px 0 0 -22px;
+}
+.glow-far[data-hot="true"] {
+  width: 250px;
+  height: 250px;
+  margin: -125px 0 0 -125px;
+}
 
 /* ── reduced motion ───────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
@@ -723,5 +864,7 @@ html.lenis body { height: auto; }
   .atmos::before,
   .atmos::after { animation: none; }
   .wish-band::after { animation: none; }
-  .cursor-root { display: none; }
+  .spine-line { transform: scaleY(1); }
+  .spine-node { opacity: 1; transform: scale(1); }
+  .glow { display: none; }
 }
