@@ -454,10 +454,7 @@ html.lenis body { height: auto; }
    Each group is a panel that lifts toward the reader on hover. The
    surface, border and shadow all live on a pseudo-element so the card
    carries a background without its content inheriting one, and the
-   whole box composites as one layer.
-
-   Perspective lives on the grid, which is what lets a card come
-   forward into real depth rather than just scaling. */
+   whole box composites as one layer. */
 .cols {
   perspective: 1400px;
 }
@@ -655,104 +652,167 @@ html.lenis body { height: auto; }
 .work-row:hover .shot-sheen {
   background-position: -60% 0;
 }
-/* ── the morph ────────────────────────────────
-   A circuit trace becoming a code bracket, driven by scroll.
-   
-   Both marks share one rotation and one scale — only opacity and the
-   stroke reveal cross over. That shared motion is what makes it read
-   as a single object changing rather than two images swapping, and it
-   costs one transform on one parent instead of two on two children.
-   
-   The stroke draw runs backwards on the way out and forwards on the
-   way in, so the circuit un-draws itself as the code writes itself. */
-.morph {
+
+/* ── the notepad ──────────────────────────────
+   Pages hinge, they do not dissolve. Each card rotates away from its
+   own top edge — transform-origin at the top, rotateX going negative
+   — so it lifts like a page off a spiral pad.
+
+   The card underneath is fully drawn and fully opaque the whole time.
+   Nothing crossfades: the leaving page hides the next one until it
+   has physically moved out of the way, which is the entire reason a
+   real page turn never looks muddy.
+
+   NOTE: no abs() anywhere. CSS abs() is not supported in shipping
+   browsers yet, and one unsupported function invalidates the whole
+   declaration. max(x, -x) is the portable form. */
+.stack-scene {
+  height: 340svh;
+}
+
+.beats {
+  perspective: 1100px;
+  perspective-origin: 50% 0%;
+}
+
+.beat {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  z-index: 0;
-  width: min(58vw, 720px);
+  inset: 0;
   pointer-events: none;
+
+  /* distance from being the active card */
+  --d: calc(var(--i) - var(--s));
+  /* how far back a waiting card sits, capped at three */
+  --wait: max(0, min(3, var(--d)));
+  /* how far this page has turned, 0 → 1 */
+  --turn: clamp(0, calc(var(--d) * -1), 1);
+
+  /* the hinge is the top edge, and it is behind the page */
+  transform-origin: 50% 0%;
+  transform-style: preserve-3d;
+
   transform:
-    translate(-50%, -50%)
-    rotate(calc(var(--p, 0) * 90deg))
-    scale(calc(0.94 + var(--p, 0) * 0.12));
-  transition: transform 0.2s linear;
-}
-.morph svg {
-  width: 100%;
-  height: auto;
-  stroke: #63e8ff;
+    translate3d(0, calc(var(--wait) * 10px), calc(var(--wait) * -46px))
+    scale(calc(1 - var(--wait) * 0.028))
+    rotateX(calc(var(--turn) * -96deg));
+
+  /* binary, not a fade. A card that has fully turned is gone; one
+     that has not is completely solid. The 0.86 threshold means it
+     only vanishes once it is nearly edge-on and invisible anyway. */
+  opacity: clamp(0, calc((0.86 - var(--turn)) * 40), 1);
+
+  /* pages stack in reverse — the top of the pad is the front */
+  z-index: calc(100 - var(--i));
+
+  transition:
+    transform 0.25s linear,
+    opacity 0.15s linear;
 }
 
-/* circuit: full at the top of the section, gone by halfway */
-.morph-a {
-  opacity: calc((1 - var(--p, 0) * 2) * 0.16);
-  stroke-dasharray: 1;
-  stroke-dashoffset: calc(var(--p, 0) * 1.6);
+.beat-face {
+  position: relative;
+  height: 100%;
+  border-radius: 20px;
+  border: 1px solid rgba(75, 71, 128, 0.34);
+
+  /* fully opaque — the page underneath must never show through */
+  background: linear-gradient(to bottom, #191545, #0f0d28);
+  box-shadow:
+    0 40px 70px -46px rgba(0, 0, 0, 0.95),
+    0 1px 0 0 rgba(255, 255, 255, 0.04) inset;
+  padding: clamp(28px, 4vw, 52px);
+  overflow: hidden;
+  backface-visibility: hidden;
 }
 
-/* code: absent until halfway, full by the bottom */
-.morph-b {
-  opacity: calc((var(--p, 0) * 2 - 1) * 0.16);
-  stroke-dasharray: 1;
-  stroke-dashoffset: calc(1 - var(--p, 0));
-}
-
-@media (max-width: 900px) {
-  .morph { width: 86vw; opacity: 0.7; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .morph { transform: translate(-50%, -50%) rotate(90deg); }
-  .morph-a { opacity: 0; }
-  .morph-b { opacity: 0.16; stroke-dashoffset: 0; }
-}
-
-/* ── the spine ────────────────────────────────
-   One line that draws downward as the section enters, with nodes that
-   pop after it has passed them. Scaling a single element beats
-   animating four separate heights, and the nodes only need a delay
-   rather than any knowledge of where the line has reached. */
-.spine-line {
+/* the fold: a shadow that deepens across the top as the page lifts */
+.beat-face::before {
+  content: "";
   position: absolute;
-  left: 0;
-  top: 6px;
-  bottom: 6px;
-  width: 1px;
+  inset-inline: 0;
+  top: 0;
+  height: 90px;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.55), transparent);
+  opacity: var(--turn);
+  pointer-events: none;
+}
+
+/* only the page at the front carries the cyan edge */
+.beat-face::after {
+  content: "";
+  position: absolute;
+  inset-inline: 26%;
+  top: 0;
+  height: 1px;
   background: linear-gradient(
-    to bottom,
-    rgba(99, 232, 255, 0.5),
-    rgba(75, 71, 128, 0.5) 55%,
+    to right,
+    transparent,
+    rgba(99, 232, 255, 0.7),
     transparent
   );
-  transform: scaleY(0);
-  transform-origin: top;
-  transition: transform 1.6s var(--ease-slow);
-}
-.spine.in .spine-line {
-  transform: scaleY(1);
+  opacity: clamp(0, calc(1 - max(var(--d), calc(var(--d) * -1)) * 2), 1);
 }
 
-.spine-node {
-  position: absolute;
-  left: -40px;
-  top: 4px;
-  width: 9px;
-  height: 9px;
-  margin-left: -4px;
-  border-radius: 50%;
-  border: 1px solid rgba(99, 232, 255, 0.55);
-  background: #0a0a18;
-  opacity: 0;
-  transform: scale(0.4);
-  transition:
-    opacity 0.5s var(--ease-slow),
-    transform 0.6s var(--ease-slow);
-  transition-delay: calc(300ms + var(--i) * 320ms);
+/* ── progress pips ───────────────────────────── */
+.beat-pip {
+  height: 2px;
+  flex: 1;
+  border-radius: 2px;
+  background: rgba(75, 71, 128, 0.4);
+  position: relative;
+  overflow: hidden;
 }
-.spine.in .spine-node {
-  opacity: 1;
-  transform: scale(1);
+.beat-pip::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: #63e8ff;
+  transform-origin: left;
+  transform: scaleX(clamp(0, calc(var(--s) - var(--i)), 1));
+}
+
+/* ── the creed ────────────────────────────────
+   Each line rises out of its own clip as the scroll reaches it. --c
+   counts 0 → 3 across the scene, so a line's progress is simply the
+   scroll minus its own index, clamped — no per-line handler, no
+   state, and the reader sets the pace rather than a timer. */
+.creed-scene {
+  height: 260svh;
+}
+
+.creed-line {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.06em;
+}
+
+.creed-line > span {
+  display: block;
+  /* 0 when waiting, 1 when fully arrived */
+  --t: clamp(0, calc(var(--c) - var(--i)), 1);
+  transform: translateY(calc((1 - var(--t)) * 110%));
+  opacity: var(--t);
+  transition:
+    transform 0.25s linear,
+    opacity 0.25s linear;
+}
+
+/* the rule waits for the last line, then draws out from the centre —
+   scaling from the middle reads as an underline being placed rather
+   than a progress bar filling */
+.creed-rule {
+  display: block;
+  height: 1px;
+  width: min(280px, 46vw);
+  margin-inline: auto;
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(99, 232, 255, 0.6),
+    transparent
+  );
+  transform: scaleX(clamp(0, calc(var(--c) - 2.6), 1));
+  transition: transform 0.3s linear;
 }
 
 /* ── capability rows ──────────────────────────
@@ -864,7 +924,28 @@ html.lenis body { height: auto; }
   .atmos::before,
   .atmos::after { animation: none; }
   .wish-band::after { animation: none; }
-  .spine-line { transform: scaleY(1); }
-  .spine-node { opacity: 1; transform: scale(1); }
   .glow { display: none; }
+
+  .stack-scene { height: auto; }
+  .stack-scene > div {
+    position: static;
+    height: auto;
+    padding-block: 4rem;
+  }
+  .beats { height: auto; }
+  .beat {
+    position: static;
+    transform: none;
+    opacity: 1;
+    margin-bottom: 1.25rem;
+  }
+
+  .creed-scene { height: auto; }
+  .creed-scene > div {
+    position: static;
+    height: auto;
+    padding-block: 5rem;
+  }
+  .creed-line > span { transform: none; opacity: 1; }
+  .creed-rule { transform: scaleX(1); }
 }
