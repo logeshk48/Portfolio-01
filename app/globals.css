@@ -838,6 +838,42 @@ html.lenis body { height: auto; }
   opacity: 1;
 }
 
+/* ── form fields ──────────────────────────────
+   Boxed, because a two-column form needs its inputs to read as
+   discrete cells. Underlines work for a single stacked column and
+   fall apart in a grid.
+
+   The autofill rule matters more than it looks: without it Chrome
+   repaints filled inputs bright blue and wrecks the section. The
+   9999s transition is the standard trick — you cannot override the
+   background directly, so you outrun it with an inset shadow. */
+.field {
+  color-scheme: dark;
+}
+.field::placeholder {
+  transition: opacity 0.4s var(--ease-slow);
+}
+.field:focus::placeholder {
+  opacity: 0.4;
+}
+
+.field:-webkit-autofill,
+.field:-webkit-autofill:hover,
+.field:-webkit-autofill:focus {
+  -webkit-text-fill-color: #f2f1fa;
+  -webkit-box-shadow: 0 0 0 1000px #10112a inset;
+  transition: background-color 9999s ease-in-out 0s;
+}
+
+/* the native arrow is drawn by the OS and cannot be styled, so it is
+   removed and replaced with one drawn as a background image */
+select.field {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none' stroke='%238b88b0' stroke-width='1.5'%3E%3Cpath d='M1 1.5 6 6.5l5-5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+  padding-right: 44px;
+}
+
 /* ── scroll reveal ────────────────────────────── */
 .reveal {
   opacity: 0;
