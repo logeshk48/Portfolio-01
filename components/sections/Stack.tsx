@@ -1,21 +1,21 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useState } from "react";
 import Reveal from "@/components/ui/Reveal";
-import WishBand from "./WishBand";
-import { STACK } from "@/lib/stack";
+import { INTERESTS, STACK } from "@/lib/stack";
 
 /**
- * Six cards. Hovering one lifts it toward the reader on a real
- * perspective — translateZ, not a scale — while the other five step
- * back. Attention is created by taking it away from everything else.
+ * Six panels side by side. Hovering one opens it and squeezes the
+ * rest.
  *
- * The surface, border and shadow all live on a pseudo-element, so a
- * card gains a background without its content ever inheriting one,
- * and the whole box composites as a single layer.
+ * flex-grow does the work, and because it works on either axis the
+ * same rule handles the mobile layout — the container just switches
+ * to a column and the panels expand downward instead of sideways. No
+ * second component, no breakpoint-specific state.
  *
- * The spotlight writes two custom properties on a ref, never through
- * state, so moving the mouse across this section never re-renders.
+ * The reference sites carry this with a photograph per panel. With no
+ * imagery the collapsed state has to earn its width some other way,
+ * so each one holds a large ghosted mark and a rotated name.
  */
 
 const head = [
@@ -23,136 +23,154 @@ const head = [
   "uppercase tracking-[-0.03em] leading-none",
 ].join(" ");
 
-const card = [
-  "card col flex flex-col items-center",
-  "px-7 pb-9 pt-8 text-center",
-].join(" ");
-
-const cardTitle = [
-  "mt-6 font-display text-[19px] font-semibold uppercase",
-  "tracking-[0.03em] text-text",
-].join(" ");
-
-const skill = [
-  "tick block py-[7px] font-display text-[15.5px] font-medium",
-  "tracking-[0.015em] text-muted hover:text-text",
+const wish = [
+  "wish font-display text-[clamp(20px,2.4vw,34px)] font-semibold",
+  "uppercase tracking-[-0.02em] text-muted/55",
 ].join(" ");
 
 export default function Stack() {
-  const spot = useRef<HTMLDivElement>(null);
-  const [lit, setLit] = useState(false);
-
-  const move = (e: React.MouseEvent<HTMLElement>) => {
-    const el = spot.current;
-    if (!el) return;
-    const r = e.currentTarget.getBoundingClientRect();
-    el.style.setProperty("--mx", `${e.clientX - r.left}px`);
-    el.style.setProperty("--my", `${e.clientY - r.top}px`);
-  };
+  const [open, setOpen] = useState(0);
 
   return (
-    <section id="stack" className="relative overflow-hidden py-32 lg:py-44">
+    <section id="stack" className="relative overflow-hidden py-24">
       <div className="atmos" aria-hidden />
-      <div ref={spot} className="spot" data-on={lit} aria-hidden />
 
-      <div
-        className="relative px-(--gut)"
-        onMouseMove={move}
-        onMouseEnter={() => setLit(true)}
-        onMouseLeave={() => setLit(false)}
-      >
-        {/* ── centred head ─────────────────────────── */}
+      <div className="relative px-(--gut)">
         <Reveal>
           <div className="flex items-center justify-center gap-6">
             <span className="h-px w-16 bg-gradient-to-r from-transparent to-line-hi max-sm:w-8" />
             <h2 className={head}>
-              <span className="mask-line">
-                <span>
-                  My <span className="ice">Stack</span>
-                </span>
-              </span>
+              My <span className="ice">Stack</span>
             </h2>
             <span className="h-px w-16 bg-gradient-to-l from-transparent to-line-hi max-sm:w-8" />
           </div>
         </Reveal>
 
         <Reveal delay={90}>
-          <p className="mx-auto mt-7 max-w-[46ch] text-center text-[15.5px] font-light leading-[1.8] text-muted">
+          <p className="mx-auto mt-6 max-w-[46ch] text-center text-[15.5px] font-light leading-[1.8] text-muted">
             Everything I have shipped with. From the first line of a
             component to a model answering in production.
           </p>
         </Reveal>
 
-        {/* ── six cards, three across ──────────────── */}
-        <div className="cols mx-auto mt-24 grid max-w-[1180px] grid-cols-3 gap-5 max-lg:grid-cols-2 max-sm:grid-cols-1">
-          {STACK.map((group, i) => (
-            <Reveal key={group.label} delay={140 + i * 90} className={card}>
-              <span className="label text-line-hi">
-                {String(i + 1).padStart(2, "0")}
-              </span>
+        {/* ── six panels ───────────────────────────── */}
+        <Reveal delay={160}>
+          <div className="panels mx-auto mt-12 flex max-w-[1240px] gap-3 max-lg:flex-col">
+            {STACK.map((group, i) => {
+              const isOpen = i === open;
 
-              {/* orbit, halo and mark share one box so they cannot drift */}
-              <div className="relative mt-5 flex size-[84px] items-center justify-center">
-                <span className="halo" aria-hidden />
-
-                <svg
-                  className="orbit absolute inset-0 text-line-hi"
-                  viewBox="0 0 100 100"
-                  aria-hidden
+              return (
+                <div
+                  key={group.label}
+                  className="panel"
+                  data-on={isOpen}
+                  onMouseEnter={() => setOpen(i)}
+                  onFocus={() => setOpen(i)}
+                  onClick={() => setOpen(i)}
+                  tabIndex={0}
+                  role="button"
+                  aria-expanded={isOpen}
                 >
-                  <circle
-                    cx="50"
-                    cy="50"
-                    r="47"
+                  {/* the ghost mark, mostly hidden, anchoring the panel */}
+                  <svg
+                    className="panel-ghost"
+                    viewBox="0 0 24 24"
                     fill="none"
                     stroke="currentColor"
-                    strokeWidth="1"
-                    strokeDasharray="3 7"
+                    strokeWidth="0.7"
                     strokeLinecap="round"
-                  />
-                </svg>
-
-                <svg
-                  className="ink relative text-ice"
-                  viewBox="0 0 24 24"
-                  width="33"
-                  height="33"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  aria-hidden
-                >
-                  <path d={group.icon} pathLength={1} />
-                </svg>
-              </div>
-
-              <h3 className={cardTitle}>{group.label}</h3>
-
-              <p className="note label max-w-[24ch] normal-case tracking-[0.05em]">
-                {group.note}
-              </p>
-
-              <span className="mt-5 block h-px w-7 bg-line-hi/60" aria-hidden />
-
-              <div className="mt-3">
-                {group.items.map((s, k) => (
-                  <span
-                    key={s}
-                    className={skill}
-                    style={{ "--i": k } as React.CSSProperties}
+                    strokeLinejoin="round"
+                    aria-hidden
                   >
-                    {s}
-                  </span>
-                ))}
-              </div>
-            </Reveal>
-          ))}
-        </div>
+                    <path d={group.icon} />
+                  </svg>
+
+                  {/* ── collapsed: rotated name and index ── */}
+                  <div className="panel-spine">
+                    <span className="label text-line-hi">
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                    <span className="panel-vert font-display text-[19px] font-semibold uppercase tracking-[0.06em]">
+                      {group.label}
+                    </span>
+                  </div>
+
+                  {/* ── open: the whole group ────────────── */}
+                  <div className="panel-face">
+                    <div className="flex items-center gap-4">
+                      <span className="label text-ice">
+                        {String(i + 1).padStart(2, "0")}
+                      </span>
+                      <span className="h-px w-8 bg-ice/40" />
+                      <span className="label">
+                        {String(group.items.length).padStart(2, "0")} things
+                      </span>
+                    </div>
+
+                    <svg
+                      className="ink mt-7 text-ice"
+                      viewBox="0 0 24 24"
+                      width="34"
+                      height="34"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      aria-hidden
+                    >
+                      <path d={group.icon} pathLength={1} />
+                    </svg>
+
+                    <h3 className="mt-5 font-display text-[clamp(24px,2.6vw,36px)] font-semibold uppercase leading-none tracking-[-0.02em] text-text">
+                      {group.label}
+                    </h3>
+
+                    <p className="mt-3 max-w-[28ch] text-[14px] font-light leading-[1.6] text-muted">
+                      {group.note}
+                    </p>
+
+                    <div className="mt-6 flex flex-wrap gap-x-8 gap-y-1">
+                      {group.items.map((s, k) => (
+                        <span
+                          key={s}
+                          className="panel-item"
+                          style={{ "--i": k } as React.CSSProperties}
+                        >
+                          {s}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </Reveal>
       </div>
 
-      <WishBand />
+      {/* ── what I want to build ─────────────────── */}
+      <div className="wish-band mt-16 border-y border-line/70 py-7">
+        <p className="label relative mb-5 px-(--gut) text-center">
+          What I want to build
+        </p>
+
+        <div className="rail wish-rail relative">
+          <div
+            className="rail-track"
+            style={{ "--dur": "52s" } as React.CSSProperties}
+          >
+            {[...INTERESTS, ...INTERESTS].map((x, k) => (
+              <span key={`${x}-${k}`} className="flex items-center gap-10">
+                <span className={wish}>{x}</span>
+                <span className="text-ice/40" aria-hidden>
+                  &#9679;
+                </span>
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
     </section>
   );
 }

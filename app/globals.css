@@ -411,96 +411,55 @@ html.lenis body { height: auto; }
   to { stroke-dashoffset: 0; }
 }
 
-/* NOTE: this used to be called .ring, which collides with Tailwind's
-   own ring utility — that utility drew a box-shadow around the SVG's
-   square bounding box, which is where the mystery square came from.
-   Never name a custom class after a framework utility. */
-.orbit {
-  transition: opacity 0.6s var(--ease-slow);
-  opacity: 0.35;
-}
-.col:hover .orbit {
-  opacity: 0.9;
-  animation: ringTurn 14s linear infinite;
-}
-@keyframes ringTurn {
-  to { transform: rotate(360deg); }
+/* ── the panels ───────────────────────────────
+   Six slices, one open. flex-grow does all of it — and because
+   flex-grow works on either axis, the same rules handle mobile: the
+   container switches to a column and the panels expand downward
+   instead of sideways. No second component, no breakpoint state.
+
+   The references carry this with a photograph per panel. With no
+   imagery the collapsed state has to earn its width another way, so
+   it holds a large ghosted mark and a rotated name. */
+.panels {
+  height: clamp(400px, 52vh, 520px);
 }
 
-/* a halo behind the mark. Blurred and scaled from nothing, so it
-   blooms rather than switches on. */
-.halo {
-  position: absolute;
-  inset: 12%;
-  border-radius: 50%;
-  background: radial-gradient(
-    circle,
-    rgba(99, 232, 255, 0.5) 0%,
-    transparent 68%
-  );
-  filter: blur(16px);
-  opacity: 0;
-  transform: scale(0.6);
-  transition:
-    opacity 0.7s var(--ease-slow),
-    transform 0.9s var(--ease-slow);
-}
-.col:hover .halo {
-  opacity: 0.55;
-  transform: scale(1);
-}
-
-/* ── the stack card ───────────────────────────
-   Each group is a panel that lifts toward the reader on hover. The
-   surface, border and shadow all live on a pseudo-element so the card
-   carries a background without its content inheriting one, and the
-   whole box composites as one layer. */
-.cols {
-  perspective: 1400px;
-}
-
-.card {
+.panel {
   position: relative;
-  border-radius: 20px;
-  transform-style: preserve-3d;
-  transition:
-    transform 0.75s var(--ease-slow),
-    opacity 0.6s var(--ease-slow);
-  will-change: transform;
-}
-
-/* present at rest — quiet enough that six read as a set rather than
-   six competing panels — then lit on hover */
-.card::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
+  flex: 1 1 0;
+  min-width: 0;
+  overflow: hidden;
+  cursor: pointer;
+  border-radius: 16px;
   border: 1px solid rgba(75, 71, 128, 0.28);
-  background:
-    linear-gradient(
-      to bottom,
-      rgba(22, 18, 50, 0.55),
-      rgba(13, 11, 32, 0.35)
-    );
-  box-shadow: 0 18px 40px -34px rgba(0, 0, 0, 0.9);
-  opacity: 1;
-  transform: scale(1);
+  background: linear-gradient(
+    to bottom,
+    rgba(22, 18, 50, 0.6),
+    rgba(13, 11, 32, 0.4)
+  );
   transition:
-    background 0.65s var(--ease-slow),
-    border-color 0.65s var(--ease-slow),
-    box-shadow 0.75s var(--ease-slow);
+    flex-grow 0.85s var(--ease-slow),
+    border-color 0.6s var(--ease-slow),
+    background 0.6s var(--ease-slow);
 }
 
-/* a hairline of cyan along the top edge only — a light source, not
-   an outline */
-.card::after {
+.panel[data-on="true"] {
+  flex-grow: 4.6;
+  border-color: rgba(99, 232, 255, 0.3);
+  background: linear-gradient(
+    to bottom,
+    rgba(30, 25, 70, 0.85),
+    rgba(15, 12, 38, 0.7)
+  );
+}
+
+/* a hairline of cyan along the top edge of the open panel */
+.panel::after {
   content: "";
   position: absolute;
-  inset-inline: 22%;
+  inset-inline: 20%;
   top: 0;
   height: 1px;
-  border-radius: 1px;
   background: linear-gradient(
     to right,
     transparent,
@@ -508,78 +467,134 @@ html.lenis body { height: auto; }
     transparent
   );
   opacity: 0;
-  transform: scaleX(0.3);
-  transition:
-    opacity 0.6s var(--ease-slow),
-    transform 0.8s var(--ease-slow);
+  transition: opacity 0.6s var(--ease-slow);
+}
+.panel[data-on="true"]::after {
+  opacity: 1;
 }
 
-.card > * {
+/* the ghost: large, faint, and cropped by the panel itself, so a
+   narrow slice shows only a fragment of it */
+.panel-ghost {
+  position: absolute;
+  right: -30%;
+  bottom: -18%;
+  width: 200px;
+  height: 200px;
+  color: #63e8ff;
+  opacity: 0.05;
+  transition: opacity 0.7s var(--ease-slow);
+  pointer-events: none;
+}
+.panel[data-on="true"] .panel-ghost {
+  opacity: 0.09;
+}
+
+/* ── collapsed ────────────────────────────────
+   The name runs bottom-to-top, which is the direction that keeps it
+   readable when you tilt your head left — the convention every book
+   spine follows. */
+.panel-spine {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 1.5rem;
+  padding-block: 1.75rem;
+  opacity: 1;
+  transition: opacity 0.4s var(--ease-slow);
+}
+.panel[data-on="true"] .panel-spine {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.panel-vert {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  color: #8b88b0;
+  white-space: nowrap;
+  transition: color 0.5s var(--ease-slow);
+}
+.panel:hover .panel-vert {
+  color: #f2f1fa;
+}
+
+/* ── open ─────────────────────────────────────
+   Held at zero opacity rather than display:none, so the text never
+   reflows as the panel widens — it fades in once there is room. */
+.panel-face {
   position: relative;
-  z-index: 1;
-}
-
-.cols:hover .card {
-  opacity: 0.45;
-}
-
-.cols .card:hover {
-  opacity: 1;
-  transform: translateY(-12px) translateZ(46px);
-}
-
-.cols .card:hover::before {
-  border-color: rgba(99, 232, 255, 0.30);
-  background:
-    linear-gradient(
-      to bottom,
-      rgba(30, 25, 68, 0.85),
-      rgba(16, 13, 40, 0.65)
-    );
-  box-shadow:
-    0 34px 60px -28px rgba(0, 0, 0, 0.85),
-    0 0 90px -30px rgba(99, 232, 255, 0.35);
-}
-
-.cols .card:hover::after {
-  opacity: 1;
-  transform: scaleX(1);
-}
-
-/* the note under each title: held at zero height until hover, so it
-   can never push the cards out of alignment */
-.note {
-  max-height: 0;
+  height: 100%;
+  padding: clamp(26px, 2.6vw, 40px);
   opacity: 0;
-  overflow: hidden;
+  pointer-events: none;
+  transition: opacity 0.5s var(--ease-slow);
+}
+.panel[data-on="true"] .panel-face {
+  opacity: 1;
+  pointer-events: auto;
+  transition-delay: 0.25s;
+}
+
+.panel[data-on="true"] .ink path {
+  animation: inkDraw 1.2s var(--ease-slow) 0.35s forwards;
+}
+
+.panel-item {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 15.5px;
+  font-weight: 500;
+  letter-spacing: 0.015em;
+  padding-block: 5px;
+  color: #8b88b0;
+  opacity: 0;
+  transform: translateY(8px);
   transition:
-    max-height 0.6s var(--ease-slow),
     opacity 0.5s var(--ease-slow),
-    margin 0.6s var(--ease-slow);
-}
-.col:hover .note {
-  max-height: 3em;
-  opacity: 1;
-  margin-top: 0.5rem;
-}
-
-/* items arrive one after another inside their own card */
-.tick {
-  opacity: 0;
-  transform: translateY(10px);
-  transition:
-    opacity 0.7s var(--ease-slow),
-    transform 0.7s var(--ease-slow),
+    transform 0.5s var(--ease-slow),
     color 0.3s ease;
-  transition-delay: calc(340ms + var(--i) * 80ms);
 }
-.reveal.in .tick {
+.panel-item:hover {
+  color: #f2f1fa;
+}
+.panel[data-on="true"] .panel-item {
   opacity: 1;
   transform: none;
+  transition-delay: calc(400ms + var(--i) * 55ms);
 }
-/* the delay is only for arrival — hover must answer immediately */
-.tick:hover {
-  transition-delay: 0ms;
+
+/* ── mobile: same rules, other axis ──────────── */
+@media (max-width: 1023px) {
+  .panels {
+    height: auto;
+  }
+  .panel {
+    flex: 0 0 auto;
+    height: 74px;
+    transition:
+      height 0.75s var(--ease-slow),
+      border-color 0.6s var(--ease-slow),
+      background 0.6s var(--ease-slow);
+  }
+  .panel[data-on="true"] {
+    height: 420px;
+  }
+  .panel-spine {
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 1rem;
+    padding-inline: 1.5rem;
+    padding-block: 0;
+  }
+  .panel-vert {
+    writing-mode: horizontal-tb;
+    transform: none;
+  }
 }
 
 /* the title rises out of a clip instead of fading — a mask reveal
@@ -817,10 +832,7 @@ html.lenis body { height: auto; }
 
 /* ── capability rows ──────────────────────────
    The detail list is held at zero height and opens on hover, so five
-   capabilities read as five lines until you want more from one. Grid
-   rows animate from 0fr to 1fr — the only way to transition to
-   content height without hard-coding a max-height that will
-   eventually be wrong. */
+   capabilities read as five lines until you want more from one. */
 .cap-detail {
   display: grid;
   grid-template-rows: 0fr;
@@ -1014,6 +1026,8 @@ select.field {
   .atmos::after { animation: none; }
   .wish-band::after { animation: none; }
   .glow { display: none; }
+
+  .panel-item { opacity: 1; transform: none; }
 
   .stack-scene { height: auto; }
   .stack-scene > div {
