@@ -1,7 +1,8 @@
 import Link from "next/link";
 import Reveal from "@/components/ui/Reveal";
+import LocalTime from "@/components/ui/LocalTime";
 import ContactForm from "./ContactForm";
-import { EMAIL, LIVE_SOCIALS, LOCATION, TIMEZONE } from "@/lib/contact";
+import { EMAIL, LIVE_SOCIALS, LOCATION } from "@/lib/contact";
 
 /**
  * Form on the left, direct contact on the right.
@@ -71,15 +72,15 @@ export default function Contact() {
               </Link>
 
               <div className="mt-6 border-t border-line/60 pt-5">
-                <div className="flex justify-between gap-6 py-[7px]">
+                <div className="flex items-center justify-between gap-6 py-[10px]">
                   <span className="label">Based in</span>
                   <span className="label text-text">{LOCATION}</span>
                 </div>
-                <div className="flex justify-between gap-6 py-[7px]">
-                  <span className="label">Timezone</span>
-                  <span className="label text-text">{TIMEZONE}</span>
+                <div className="flex items-center justify-between gap-6 py-[10px]">
+                  <span className="label">Right now</span>
+                  <LocalTime />
                 </div>
-                <div className="flex justify-between gap-6 py-[7px]">
+                <div className="flex items-center justify-between gap-6 py-[10px]">
                   <span className="label">Replies</span>
                   <span className="label text-text">Within a few days</span>
                 </div>

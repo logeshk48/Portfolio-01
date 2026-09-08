@@ -13,23 +13,29 @@ import { EMAIL, INTENTS } from "@/lib/contact";
  * silently. A honeypot field no human can see catches most bots
  * without a captcha. And the button carries its own state, so nobody
  * double-submits while waiting.
+ *
+ * On success the whole form is replaced rather than annotated. A
+ * one-line "sent" under a still-full form leaves people wondering
+ * whether it worked; a takeover does not.
  */
 
 type State = "idle" | "sending" | "sent" | "error";
 
-const label = "label mb-2 block";
+const label = "field-label mb-2 block";
 
 const field = [
   "field w-full rounded-[10px] border border-line bg-white/[0.02]",
   "px-4 py-[13px] text-[15px] font-light text-text",
-  "transition-colors duration-500",
-  "placeholder:text-muted/55 focus:border-ice/60 focus:outline-none",
+  "transition-[border-color,box-shadow,background-color] duration-500",
+  "placeholder:text-muted/55 focus:outline-none",
 ].join(" ");
 
 const KEY = process.env.NEXT_PUBLIC_WEB3FORMS_KEY;
+const FIELDS = 4;
 
 export default function ContactForm() {
   const [state, setState] = useState<State>("idle");
+  const [filled, setFilled] = useState(0);
 
   // no key configured — send them to email rather than a broken form
   if (!KEY) {
@@ -50,6 +56,15 @@ export default function ContactForm() {
       </div>
     );
   }
+
+  /* count what is filled, without controlling a single input */
+  const measure = (e: React.FormEvent<HTMLFormElement>) => {
+    const data = new FormData(e.currentTarget);
+    const done = ["name", "email", "intent", "message"].filter((k) =>
+      String(data.get(k) ?? "").trim()
+    ).length;
+    setFilled(done);
+  };
 
   const submit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -72,6 +87,7 @@ export default function ContactForm() {
       if (json.success) {
         setState("sent");
         form.reset();
+        setFilled(0);
       } else {
         setState("error");
       }
@@ -80,8 +96,62 @@ export default function ContactForm() {
     }
   };
 
+  /* ── the takeover ──────────────────────────── */
+  if (state === "sent") {
+    return (
+      <div className="sent-panel rounded-[16px] border border-ice/25 p-10 text-center">
+        <svg
+          viewBox="0 0 52 52"
+          width="58"
+          height="58"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="mx-auto text-ice"
+          aria-hidden
+        >
+          <circle className="sent-ring" cx="26" cy="26" r="24" pathLength={1} />
+          <path className="sent-tick" d="m15 27 8 8 15-16" pathLength={1} />
+        </svg>
+
+        <h3 className="mt-7 font-display text-[26px] font-semibold uppercase tracking-[0.02em] text-text">
+          Message sent
+        </h3>
+
+        <p className="mx-auto mt-4 max-w-[34ch] text-[15px] font-light leading-[1.75] text-muted">
+          It landed in my inbox. I read everything and reply to what I
+          can — usually within a few days.
+        </p>
+
+        <button
+          type="button"
+          onClick={() => setState("idle")}
+          className="label-lg mt-8 rounded-full border border-line px-[20px] py-[11px] text-muted transition-colors duration-500 hover:border-line-hi hover:text-text"
+        >
+          Send another
+        </button>
+      </div>
+    );
+  }
+
   return (
-    <form onSubmit={submit}>
+    <form onSubmit={submit} onInput={measure}>
+      {/* how far through the form you are — the only progress bar on
+          the site that measures something real */}
+      <div className="mb-8 flex items-center gap-4">
+        <span className="label whitespace-nowrap">
+          {filled} / {FIELDS}
+        </span>
+        <div className="relative h-px flex-1 bg-line">
+          <span
+            className="absolute inset-y-0 left-0 bg-ice transition-[width] duration-700 ease-out"
+            style={{ width: `${(filled / FIELDS) * 100}%` }}
+          />
+        </div>
+      </div>
+
       {/* honeypot — hidden from people, irresistible to bots */}
       <input
         type="checkbox"
@@ -93,7 +163,7 @@ export default function ContactForm() {
       />
 
       <div className="grid grid-cols-2 gap-5 max-sm:grid-cols-1">
-        <div>
+        <div className="field-group">
           <label htmlFor="name" className={label}>
             Name <span className="text-ice">*</span>
           </label>
@@ -108,7 +178,7 @@ export default function ContactForm() {
           />
         </div>
 
-        <div>
+        <div className="field-group">
           <label htmlFor="email" className={label}>
             Email <span className="text-ice">*</span>
           </label>
@@ -124,7 +194,7 @@ export default function ContactForm() {
         </div>
       </div>
 
-      <div className="mt-5">
+      <div className="field-group mt-5">
         <label htmlFor="intent" className={label}>
           What is this about <span className="text-ice">*</span>
         </label>
@@ -146,7 +216,7 @@ export default function ContactForm() {
         </select>
       </div>
 
-      <div className="mt-5">
+      <div className="field-group mt-5">
         <label htmlFor="message" className={label}>
           Tell me about it <span className="text-ice">*</span>
         </label>
@@ -160,11 +230,11 @@ export default function ContactForm() {
         />
       </div>
 
-      <div className="mt-7 flex flex-wrap items-center gap-6">
+      <div className="mt-8 flex flex-wrap items-center gap-6">
         <button
           type="submit"
           disabled={state === "sending"}
-          className="pill-btn pill-solid label-lg border border-line text-text disabled:opacity-50"
+          className="pill-btn pill-solid label-lg border border-line px-[30px] py-[16px] text-text disabled:opacity-50"
         >
           <span>{state === "sending" ? "Sending" : "Send message"}</span>
           <span className="arw" aria-hidden>
@@ -172,19 +242,14 @@ export default function ContactForm() {
           </span>
         </button>
 
-        {/* one slot, so nothing reflows when the state changes */}
         <p
           aria-live="polite"
           className={[
             "label transition-opacity duration-500",
-            state === "sent" || state === "error" ? "opacity-100" : "opacity-0",
+            state === "error" ? "opacity-100" : "opacity-0",
           ].join(" ")}
         >
-          {state === "sent" && (
-            <span className="text-ice">Sent — I&apos;ll reply soon.</span>
-          )}
-          {state === "error" && <span>Something broke. Email me instead.</span>}
-          {state !== "sent" && state !== "error" && "\u00A0"}
+          {state === "error" ? "Something broke. Email me instead." : "\u00A0"}
         </p>
       </div>
 
