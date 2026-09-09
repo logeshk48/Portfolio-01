@@ -5,17 +5,17 @@ import Reveal from "@/components/ui/Reveal";
 import { INTERESTS, STACK } from "@/lib/stack";
 
 /**
- * Six panels side by side. Hovering one opens it and squeezes the
+ * Six panels, edge to edge. Hovering one opens it and squeezes the
  * rest.
  *
- * flex-grow does the work, and because it works on either axis the
- * same rule handles the mobile layout — the container just switches
- * to a column and the panels expand downward instead of sideways. No
- * second component, no breakpoint-specific state.
+ * The header keeps the page gutter; the panels break out of it and
+ * run the full width. Contiguous slices with hairline dividers read
+ * as one band — gaps and rounded corners would turn the same thing
+ * back into six boxes sitting near each other.
  *
- * The reference sites carry this with a photograph per panel. With no
- * imagery the collapsed state has to earn its width some other way,
- * so each one holds a large ghosted mark and a rotated name.
+ * flex-grow does the work, and because it works on either axis the
+ * same rules handle mobile: the container becomes a column and the
+ * panels expand downward. No second component, no breakpoint state.
  */
 
 const head = [
@@ -35,6 +35,7 @@ export default function Stack() {
     <section id="stack" className="relative overflow-hidden py-24">
       <div className="atmos" aria-hidden />
 
+      {/* ── header keeps the gutter ──────────────── */}
       <div className="relative px-(--gut)">
         <Reveal>
           <div className="flex items-center justify-center gap-6">
@@ -52,102 +53,102 @@ export default function Stack() {
             component to a model answering in production.
           </p>
         </Reveal>
+      </div>
 
-        {/* ── six panels ───────────────────────────── */}
-        <Reveal delay={160}>
-          <div className="panels mx-auto mt-12 flex max-w-[1240px] gap-3 max-lg:flex-col">
-            {STACK.map((group, i) => {
-              const isOpen = i === open;
+      {/* ── panels break out to full width ───────── */}
+      <Reveal delay={160}>
+        <div className="panels relative mt-14 flex max-lg:flex-col">
+          {STACK.map((group, i) => {
+            const isOpen = i === open;
 
-              return (
-                <div
-                  key={group.label}
-                  className="panel"
-                  data-on={isOpen}
-                  onMouseEnter={() => setOpen(i)}
-                  onFocus={() => setOpen(i)}
-                  onClick={() => setOpen(i)}
-                  tabIndex={0}
-                  role="button"
-                  aria-expanded={isOpen}
+            return (
+              <div
+                key={group.label}
+                className="panel"
+                data-on={isOpen}
+                onMouseEnter={() => setOpen(i)}
+                onFocus={() => setOpen(i)}
+                onClick={() => setOpen(i)}
+                tabIndex={0}
+                role="button"
+                aria-expanded={isOpen}
+              >
+                {/* the ghost mark, mostly cropped by the slice */}
+                <svg
+                  className="panel-ghost"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="0.7"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden
                 >
-                  {/* the ghost mark, mostly hidden, anchoring the panel */}
+                  <path d={group.icon} />
+                </svg>
+
+                {/* ── collapsed ────────────────────── */}
+                <div className="panel-spine">
+                  <span className="label text-line-hi">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <span className="panel-vert font-display text-[20px] font-semibold uppercase tracking-[0.06em]">
+                    {group.label}
+                  </span>
+                </div>
+
+                {/* ── open ─────────────────────────── */}
+                <div className="panel-face">
+                  <div className="flex items-center gap-4">
+                    <span className="label text-ice">
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                    <span className="h-px w-8 bg-ice/40" />
+                    <span className="label">
+                      {String(group.items.length).padStart(2, "0")} things
+                    </span>
+                  </div>
+
                   <svg
-                    className="panel-ghost"
+                    className="ink mt-8 text-ice"
                     viewBox="0 0 24 24"
+                    width="36"
+                    height="36"
                     fill="none"
                     stroke="currentColor"
-                    strokeWidth="0.7"
+                    strokeWidth="1.2"
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     aria-hidden
                   >
-                    <path d={group.icon} />
+                    <path d={group.icon} pathLength={1} />
                   </svg>
 
-                  {/* ── collapsed: rotated name and index ── */}
-                  <div className="panel-spine">
-                    <span className="label text-line-hi">
-                      {String(i + 1).padStart(2, "0")}
-                    </span>
-                    <span className="panel-vert font-display text-[19px] font-semibold uppercase tracking-[0.06em]">
-                      {group.label}
-                    </span>
-                  </div>
+                  <h3 className="mt-6 font-display text-[clamp(26px,3vw,44px)] font-semibold uppercase leading-none tracking-[-0.025em] text-text">
+                    {group.label}
+                  </h3>
 
-                  {/* ── open: the whole group ────────────── */}
-                  <div className="panel-face">
-                    <div className="flex items-center gap-4">
-                      <span className="label text-ice">
-                        {String(i + 1).padStart(2, "0")}
+                  <p className="mt-4 max-w-[30ch] text-[14.5px] font-light leading-[1.65] text-muted">
+                    {group.note}
+                  </p>
+
+                  <div className="mt-8 flex flex-wrap gap-x-10 gap-y-0">
+                    {group.items.map((s, k) => (
+                      <span
+                        key={s}
+                        className="panel-item"
+                        style={{ "--i": k } as React.CSSProperties}
+                      >
+                        {s}
                       </span>
-                      <span className="h-px w-8 bg-ice/40" />
-                      <span className="label">
-                        {String(group.items.length).padStart(2, "0")} things
-                      </span>
-                    </div>
-
-                    <svg
-                      className="ink mt-7 text-ice"
-                      viewBox="0 0 24 24"
-                      width="34"
-                      height="34"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="1.2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      aria-hidden
-                    >
-                      <path d={group.icon} pathLength={1} />
-                    </svg>
-
-                    <h3 className="mt-5 font-display text-[clamp(24px,2.6vw,36px)] font-semibold uppercase leading-none tracking-[-0.02em] text-text">
-                      {group.label}
-                    </h3>
-
-                    <p className="mt-3 max-w-[28ch] text-[14px] font-light leading-[1.6] text-muted">
-                      {group.note}
-                    </p>
-
-                    <div className="mt-6 flex flex-wrap gap-x-8 gap-y-1">
-                      {group.items.map((s, k) => (
-                        <span
-                          key={s}
-                          className="panel-item"
-                          style={{ "--i": k } as React.CSSProperties}
-                        >
-                          {s}
-                        </span>
-                      ))}
-                    </div>
+                    ))}
                   </div>
                 </div>
-              );
-            })}
-          </div>
-        </Reveal>
-      </div>
+              </div>
+            );
+          })}
+        </div>
+      </Reveal>
 
       {/* ── what I want to build ─────────────────── */}
       <div className="wish-band mt-16 border-y border-line/70 py-7">

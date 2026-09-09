@@ -412,16 +412,17 @@ html.lenis body { height: auto; }
 }
 
 /* ── the panels ───────────────────────────────
-   Six slices, one open. flex-grow does all of it — and because
-   flex-grow works on either axis, the same rules handle mobile: the
-   container switches to a column and the panels expand downward
-   instead of sideways. No second component, no breakpoint state.
+   Six slices, edge to edge, one open. Contiguous with hairline
+   dividers — gaps and rounded corners would turn the same thing back
+   into six boxes sitting near each other rather than one band.
 
-   The references carry this with a photograph per panel. With no
-   imagery the collapsed state has to earn its width another way, so
-   it holds a large ghosted mark and a rotated name. */
+   flex-grow does all of it, and because flex-grow works on either
+   axis the same rules handle mobile: the container becomes a column
+   and the panels expand downward. No second component, no
+   breakpoint-specific state. */
 .panels {
-  height: clamp(400px, 52vh, 520px);
+  height: clamp(440px, 62vh, 620px);
+  border-block: 1px solid rgba(75, 71, 128, 0.28);
 }
 
 .panel {
@@ -430,40 +431,42 @@ html.lenis body { height: auto; }
   min-width: 0;
   overflow: hidden;
   cursor: pointer;
-  border-radius: 16px;
-  border: 1px solid rgba(75, 71, 128, 0.28);
   background: linear-gradient(
     to bottom,
-    rgba(22, 18, 50, 0.6),
-    rgba(13, 11, 32, 0.4)
+    rgba(20, 16, 46, 0.55),
+    rgba(11, 9, 28, 0.35)
   );
   transition:
-    flex-grow 0.85s var(--ease-slow),
-    border-color 0.6s var(--ease-slow),
+    flex-grow 0.9s var(--ease-slow),
     background 0.6s var(--ease-slow);
 }
 
+/* the divider is a border on the slice itself, so it stays put while
+   its neighbours grow and shrink */
+.panel + .panel {
+  border-left: 1px solid rgba(75, 71, 128, 0.28);
+}
+
 .panel[data-on="true"] {
-  flex-grow: 4.6;
-  border-color: rgba(99, 232, 255, 0.3);
+  flex-grow: 5.4;
   background: linear-gradient(
     to bottom,
-    rgba(30, 25, 70, 0.85),
-    rgba(15, 12, 38, 0.7)
+    rgba(31, 26, 74, 0.9),
+    rgba(14, 11, 36, 0.72)
   );
 }
 
-/* a hairline of cyan along the top edge of the open panel */
+/* a hairline of cyan along the top edge of the open slice */
 .panel::after {
   content: "";
   position: absolute;
-  inset-inline: 20%;
+  inset-inline: 18%;
   top: 0;
   height: 1px;
   background: linear-gradient(
     to right,
     transparent,
-    rgba(99, 232, 255, 0.75),
+    rgba(99, 232, 255, 0.8),
     transparent
   );
   opacity: 0;
@@ -473,14 +476,14 @@ html.lenis body { height: auto; }
   opacity: 1;
 }
 
-/* the ghost: large, faint, and cropped by the panel itself, so a
-   narrow slice shows only a fragment of it */
+/* the ghost: large, faint, and cropped by the slice itself, so a
+   narrow panel shows only a fragment of it */
 .panel-ghost {
   position: absolute;
-  right: -30%;
-  bottom: -18%;
-  width: 200px;
-  height: 200px;
+  right: -26%;
+  bottom: -16%;
+  width: 230px;
+  height: 230px;
   color: #63e8ff;
   opacity: 0.05;
   transition: opacity 0.7s var(--ease-slow);
@@ -491,9 +494,8 @@ html.lenis body { height: auto; }
 }
 
 /* ── collapsed ────────────────────────────────
-   The name runs bottom-to-top, which is the direction that keeps it
-   readable when you tilt your head left — the convention every book
-   spine follows. */
+   The name runs bottom-to-top, the direction that stays readable when
+   you tilt your head left — the convention every book spine follows. */
 .panel-spine {
   position: absolute;
   inset: 0;
@@ -501,8 +503,8 @@ html.lenis body { height: auto; }
   flex-direction: column;
   align-items: center;
   justify-content: flex-end;
-  gap: 1.5rem;
-  padding-block: 1.75rem;
+  gap: 1.75rem;
+  padding-block: 2rem;
   opacity: 1;
   transition: opacity 0.4s var(--ease-slow);
 }
@@ -524,11 +526,11 @@ html.lenis body { height: auto; }
 
 /* ── open ─────────────────────────────────────
    Held at zero opacity rather than display:none, so the text never
-   reflows as the panel widens — it fades in once there is room. */
+   reflows as the slice widens — it fades in once there is room. */
 .panel-face {
   position: relative;
   height: 100%;
-  padding: clamp(26px, 2.6vw, 40px);
+  padding: clamp(28px, 3vw, 52px);
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.5s var(--ease-slow);
@@ -536,20 +538,20 @@ html.lenis body { height: auto; }
 .panel[data-on="true"] .panel-face {
   opacity: 1;
   pointer-events: auto;
-  transition-delay: 0.25s;
+  transition-delay: 0.28s;
 }
 
 .panel[data-on="true"] .ink path {
-  animation: inkDraw 1.2s var(--ease-slow) 0.35s forwards;
+  animation: inkDraw 1.2s var(--ease-slow) 0.4s forwards;
 }
 
 .panel-item {
   display: block;
   font-family: var(--font-display);
-  font-size: 15.5px;
+  font-size: 16px;
   font-weight: 500;
   letter-spacing: 0.015em;
-  padding-block: 5px;
+  padding-block: 6px;
   color: #8b88b0;
   opacity: 0;
   transform: translateY(8px);
@@ -564,7 +566,7 @@ html.lenis body { height: auto; }
 .panel[data-on="true"] .panel-item {
   opacity: 1;
   transform: none;
-  transition-delay: calc(400ms + var(--i) * 55ms);
+  transition-delay: calc(440ms + var(--i) * 55ms);
 }
 
 /* ── mobile: same rules, other axis ──────────── */
@@ -574,26 +576,32 @@ html.lenis body { height: auto; }
   }
   .panel {
     flex: 0 0 auto;
-    height: 74px;
+    height: 76px;
     transition:
-      height 0.75s var(--ease-slow),
-      border-color 0.6s var(--ease-slow),
+      height 0.8s var(--ease-slow),
       background 0.6s var(--ease-slow);
   }
+  .panel + .panel {
+    border-left: 0;
+    border-top: 1px solid rgba(75, 71, 128, 0.28);
+  }
   .panel[data-on="true"] {
-    height: 420px;
+    height: 440px;
   }
   .panel-spine {
     flex-direction: row;
     align-items: center;
     justify-content: flex-start;
     gap: 1rem;
-    padding-inline: 1.5rem;
+    padding-inline: var(--gut);
     padding-block: 0;
   }
   .panel-vert {
     writing-mode: horizontal-tb;
     transform: none;
+  }
+  .panel-face {
+    padding-inline: var(--gut);
   }
 }
 
@@ -670,13 +678,10 @@ html.lenis body { height: auto; }
 
 /* ── the notepad ──────────────────────────────
    Pages hinge, they do not dissolve. Each card rotates away from its
-   own top edge — transform-origin at the top, rotateX going negative
-   — so it lifts like a page off a spiral pad.
-
-   The card underneath is fully drawn and fully opaque the whole time.
-   Nothing crossfades: the leaving page hides the next one until it
-   has physically moved out of the way, which is the entire reason a
-   real page turn never looks muddy.
+   own top edge, so it lifts like a page off a spiral pad. The card
+   underneath is fully drawn and fully opaque the whole time —
+   nothing crossfades, which is the entire reason a real page turn
+   never looks muddy.
 
    NOTE: no abs() anywhere. CSS abs() is not supported in shipping
    browsers yet, and one unsupported function invalidates the whole
@@ -695,14 +700,10 @@ html.lenis body { height: auto; }
   inset: 0;
   pointer-events: none;
 
-  /* distance from being the active card */
   --d: calc(var(--i) - var(--s));
-  /* how far back a waiting card sits, capped at three */
   --wait: max(0, min(3, var(--d)));
-  /* how far this page has turned, 0 → 1 */
   --turn: clamp(0, calc(var(--d) * -1), 1);
 
-  /* the hinge is the top edge, and it is behind the page */
   transform-origin: 50% 0%;
   transform-style: preserve-3d;
 
@@ -711,12 +712,7 @@ html.lenis body { height: auto; }
     scale(calc(1 - var(--wait) * 0.028))
     rotateX(calc(var(--turn) * -96deg));
 
-  /* binary, not a fade. A card that has fully turned is gone; one
-     that has not is completely solid. The 0.86 threshold means it
-     only vanishes once it is nearly edge-on and invisible anyway. */
   opacity: clamp(0, calc((0.86 - var(--turn)) * 40), 1);
-
-  /* pages stack in reverse — the top of the pad is the front */
   z-index: calc(100 - var(--i));
 
   transition:
@@ -729,8 +725,6 @@ html.lenis body { height: auto; }
   height: 100%;
   border-radius: 20px;
   border: 1px solid rgba(75, 71, 128, 0.34);
-
-  /* fully opaque — the page underneath must never show through */
   background: linear-gradient(to bottom, #191545, #0f0d28);
   box-shadow:
     0 40px 70px -46px rgba(0, 0, 0, 0.95),
@@ -740,7 +734,6 @@ html.lenis body { height: auto; }
   backface-visibility: hidden;
 }
 
-/* the fold: a shadow that deepens across the top as the page lifts */
 .beat-face::before {
   content: "";
   position: absolute;
@@ -752,7 +745,6 @@ html.lenis body { height: auto; }
   pointer-events: none;
 }
 
-/* only the page at the front carries the cyan edge */
 .beat-face::after {
   content: "";
   position: absolute;
@@ -803,7 +795,6 @@ html.lenis body { height: auto; }
 
 .creed-line > span {
   display: block;
-  /* 0 when waiting, 1 when fully arrived */
   --t: clamp(0, calc(var(--c) - var(--i)), 1);
   transform: translateY(calc((1 - var(--t)) * 110%));
   opacity: var(--t);
@@ -812,9 +803,6 @@ html.lenis body { height: auto; }
     opacity 0.25s linear;
 }
 
-/* the rule waits for the last line, then draws out from the centre —
-   scaling from the middle reads as an underline being placed rather
-   than a progress bar filling */
 .creed-rule {
   display: block;
   height: 1px;
