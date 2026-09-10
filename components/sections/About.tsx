@@ -152,7 +152,10 @@ export default function About() {
         style={{ "--c": "0" } as React.CSSProperties}
       >
         <div className="sticky top-0 flex h-svh items-center justify-center overflow-hidden px-(--gut)">
-          <div className="atmos" aria-hidden />
+          {/* the room drifts up while the lines rise — different
+              rates is what makes it read as depth */}
+          <div className="desk" aria-hidden />
+          <div className="desk-scrim" aria-hidden />
 
           <div className="relative mx-auto max-w-[1080px] text-center">
             <span className="label mb-12 block">Where that leaves me</span>

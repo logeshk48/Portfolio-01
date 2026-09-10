@@ -734,6 +734,7 @@ html.lenis body { height: auto; }
   backface-visibility: hidden;
 }
 
+/* the fold: a shadow that deepens across the top as the page lifts */
 .beat-face::before {
   content: "";
   position: absolute;
@@ -745,6 +746,7 @@ html.lenis body { height: auto; }
   pointer-events: none;
 }
 
+/* only the page at the front carries the cyan edge */
 .beat-face::after {
   content: "";
   position: absolute;
@@ -778,6 +780,47 @@ html.lenis body { height: auto; }
   transform: scaleX(clamp(0, calc(var(--s) - var(--i)), 1));
 }
 
+/* ── the desk ─────────────────────────────────
+   The room behind the creed. It rises as the section passes while the
+   lines rise too — but slower, so the two move at different rates and
+   the gap between them reads as depth. Locking it perfectly still
+   would be flatter, and background-attachment: fixed does not work on
+   iOS anyway.
+
+   The image is inset past the frame on both axes so there is always
+   slack to travel through. A parallax layer that runs out of image
+   mid-scroll is worse than no parallax. */
+.desk {
+  position: absolute;
+  inset: -12% -4%;
+  background-image: url("/img/desk.jpg");
+  background-size: cover;
+  background-position: center 62%;
+  transform: translate3d(0, calc(var(--c, 0) * -22px), 0);
+  will-change: transform;
+  opacity: 0.85;
+}
+
+/* the scrim: heavy through the middle band where the lines sit,
+   clearing toward the bottom so the monitors stay visible */
+.desk-scrim {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(
+      to bottom,
+      rgba(10, 10, 24, 0.92) 0%,
+      rgba(10, 10, 24, 0.86) 42%,
+      rgba(10, 10, 24, 0.62) 72%,
+      rgba(10, 10, 24, 0.88) 100%
+    ),
+    radial-gradient(
+      ellipse 70% 50% at 50% 45%,
+      rgba(10, 10, 24, 0.5) 0%,
+      transparent 75%
+    );
+}
+
 /* ── the creed ────────────────────────────────
    Each line rises out of its own clip as the scroll reaches it. --c
    counts 0 → 3 across the scene, so a line's progress is simply the
@@ -803,6 +846,9 @@ html.lenis body { height: auto; }
     opacity 0.25s linear;
 }
 
+/* the rule waits for the last line, then draws out from the centre —
+   scaling from the middle reads as an underline being placed rather
+   than a progress bar filling */
 .creed-rule {
   display: block;
   height: 1px;
@@ -1039,6 +1085,7 @@ select.field {
   }
   .creed-line > span { transform: none; opacity: 1; }
   .creed-rule { transform: scaleX(1); }
+  .desk { transform: none; }
 
   .sent-panel { animation: none; }
   .sent-ring,
