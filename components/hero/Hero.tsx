@@ -63,6 +63,12 @@ const specVal = [
   "text-[13.5px] font-light leading-[1.5] text-muted",
 ].join(" ");
 
+// company names in the spec rows link out. The underline is a
+// pseudo-element that wipes in from the left rather than a
+// text-decoration, because a browser underline on type this size
+// cuts straight through the descenders.
+const specLink = "spec-link font-medium text-text";
+
 const btn = [
   "pill-btn label-lg border border-line text-text",
   "transition-colors duration-500",
@@ -146,14 +152,28 @@ export default function Hero() {
               <div className={specRow}>
                 <span className={specKey}>Working</span>
                 <span className={specVal}>
-                  <b className="font-medium text-text">Dataclap</b>
+                  <Link
+                    href="https://www.dataclap.digital/"
+                    target="_blank"
+                    rel="noreferrer"
+                    className={specLink}
+                  >
+                    Dataclap
+                  </Link>
                   {" — data annotation, since Jun 2024"}
                 </span>
               </div>
               <div className={specRow}>
                 <span className={specKey}>Building</span>
                 <span className={specVal}>
-                  <b className="font-medium text-text">LetsCook</b>
+                  <Link
+                    href="https://letscooktech.com/"
+                    target="_blank"
+                    rel="noreferrer"
+                    className={specLink}
+                  >
+                    LetsCook
+                  </Link>
                   {" — web, AI agents, automation"}
                 </span>
               </div>

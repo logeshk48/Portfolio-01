@@ -13,9 +13,10 @@ import { INTERESTS, STACK } from "@/lib/stack";
  * as one band — gaps and rounded corners would turn the same thing
  * back into six boxes sitting near each other.
  *
- * flex-grow does the work, and because it works on either axis the
- * same rules handle mobile: the container becomes a column and the
- * panels expand downward. No second component, no breakpoint state.
+ * Each panel is a real button, not a div wearing role="button". The
+ * browser then handles focus, Enter and Space for free — a div has to
+ * have all three written by hand, and that is the most commonly
+ * botched accessibility pattern on the web.
  */
 
 const head = [
@@ -62,15 +63,14 @@ export default function Stack() {
             const isOpen = i === open;
 
             return (
-              <div
+              <button
                 key={group.label}
+                type="button"
                 className="panel"
                 data-on={isOpen}
                 onMouseEnter={() => setOpen(i)}
                 onFocus={() => setOpen(i)}
                 onClick={() => setOpen(i)}
-                tabIndex={0}
-                role="button"
                 aria-expanded={isOpen}
               >
                 {/* the ghost mark, mostly cropped by the slice */}
@@ -144,7 +144,7 @@ export default function Stack() {
                     ))}
                   </div>
                 </div>
-              </div>
+              </button>
             );
           })}
         </div>

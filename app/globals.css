@@ -148,6 +148,38 @@ html.lenis body { height: auto; }
   color: #0a0a18;
   border-color: #63e8ff;
 }
+/* ── inline company links ─────────────────────
+   An underline that wipes in from the left, drawn as a pseudo-element
+   sitting a few pixels below the baseline. A real text-decoration on
+   type this size cuts straight through the descenders, which is why
+   it is never used anywhere on this page. */
+.spec-link {
+  position: relative;
+  white-space: nowrap;
+  transition: color 0.4s var(--ease-slow);
+}
+.spec-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -3px;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.35;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition:
+    transform 0.5s var(--ease-slow),
+    opacity 0.4s var(--ease-slow);
+}
+.spec-link:hover {
+  color: #63e8ff;
+}
+.spec-link:hover::after {
+  transform: scaleX(1);
+  opacity: 0.7;
+}
 
 /* ── nav links ────────────────────────────────
    The label rolls up and a duplicate rolls in behind it. Two stacked
@@ -431,6 +463,13 @@ html.lenis body { height: auto; }
   min-width: 0;
   overflow: hidden;
   cursor: pointer;
+
+  /* buttons reset these three, and without them the panel content
+     would centre itself and lose the display face */
+  text-align: left;
+  font: inherit;
+  color: inherit;
+
   background: linear-gradient(
     to bottom,
     rgba(20, 16, 46, 0.55),
