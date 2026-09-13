@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import Link from "next/link";
+import { Analytics } from "@vercel/analytics/next";
 import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
 import SmoothScroll from "@/components/providers/SmoothScroll";
@@ -66,6 +67,8 @@ export default function RootLayout({
         <Cursor />
         <SmoothScroll>{children}</SmoothScroll>
 
+        {/* counts visits, not people — no cookies, no identity */}
+        <Analytics />
         <div className="grain" aria-hidden />
       </body>
     </html>
